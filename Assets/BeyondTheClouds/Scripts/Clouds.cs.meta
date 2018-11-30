@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 3b3cd8c338a403740a8ed77912c54789
+timeCreated: 1524296656
+licenseType: Store
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _CloudsShader: {fileID: 4800000, guid: 2823d984fcfc61a4483fdcd57f9b7a94, type: 3}
+  - _NoiseTexture: {fileID: 2800000, guid: 2f8c4372016cc6a478334c4a2d33b381, type: 3}
+  - _Sky_Material: {fileID: 2100000, guid: c93058387073bd647944965ee7dfcc8e, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

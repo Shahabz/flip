@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d37c702408e92e4dbb9935e0ad09c93, type: 3}
+  m_Name: Noon
+  m_EditorClassIdentifier: 
+  _OptimizeDatas: {x: 120, y: 1, z: 1, w: 12.5}
+  _DensityParams: {x: -0.73, y: -1.45, z: 1.75, w: 0.0085}
+  _HeightDatas: {x: -0, y: 2.85}
+  _WindSpeed: {x: 0, y: -0.3, z: -1}
+  _QScales: {x: 2.02, y: 2.03, z: 2.01, w: 2.02}
+  _AmbientColor: {r: 0.73924094, g: 0.7832288, b: 0.8308824, a: 1}
+  _AmbientParam: 1.4
+  _DiffuseColor: {r: 0.89705884, g: 0.76513845, b: 0.66619813, a: 1}
+  _HighDensityColor: {r: 0.3036332, g: 0.34299308, b: 0.38235295, a: 1}
+  _LowDensityColor: {r: 0.86764705, g: 0.8245837, b: 0.6953936, a: 1}
+  _SkyColor: {r: 0.1137255, g: 0.30980393, b: 0.5568628, a: 1}
+  _GroundColor: {r: 0.7205882, g: 0.9537525, b: 1, a: 1}
+  _SkyBase: 0.075
+  _SunColor: {r: 1, g: 0.82679737, b: 0.6102941, a: 1}
+  _SunPower: 190.5
+  _SunIntensity: 0.633
+  _SunGlowPower: 8.02
+  _SunGlowIntensity: 0.325
+  _SunGlowColor: {r: 1, g: 0.77389705, b: 0.6985294, a: 1}
+  _SunRotation: {x: 166.9, y: -343.4, z: 27.8}
+  _TransitionTime: 5
