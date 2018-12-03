@@ -23,7 +23,8 @@ public class Radar : MonoBehaviour {
     {
 
         jumpCount = 0;
-        levelJumpCount = 5;
+		//生成黑洞的间隔
+        levelJumpCount = 1;
     }
 
     private void OnEnable()

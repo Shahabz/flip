@@ -12,6 +12,7 @@ public class ChangeBallLayer : MonoBehaviour {
         if(other.gameObject.tag == "Player")
         {			
 			other.gameObject.layer = LayerOnEnter;
+			PlayerController.Instance.GameState = 6;
         }
     }
 		
@@ -20,7 +21,7 @@ public class ChangeBallLayer : MonoBehaviour {
         if(other.gameObject.tag == "Player")
         {
             other.gameObject.layer = LayerOnExit;
-
+			PlayerController.Instance.GameState = 7;
         }
     }
 }

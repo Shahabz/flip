@@ -9,6 +9,8 @@ TagManager:
   - DeadPlane
   - hole
   - RingPos
+  - car
+  - NpcTrigger
   layers:
   - Default
   - TransparentFX

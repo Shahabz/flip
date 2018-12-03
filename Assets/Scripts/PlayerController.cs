@@ -19,6 +19,9 @@ public class PlayerController : MonoBehaviour {
     //跳跃力
     [SerializeField]
     float force = 500;
+	//小车撞击力
+	[SerializeField]
+	float carForce = 1000;
     //重力
     [SerializeField]
     float gravity = 10;
@@ -62,6 +65,7 @@ public class PlayerController : MonoBehaviour {
     //6:进入黑洞状态
     //7:进入新关卡
     //8:转向环心
+	//9:被撞
     [HideInInspector]
     public int GameState = 0;
 
@@ -187,9 +191,7 @@ public class PlayerController : MonoBehaviour {
         //抵达新关卡
         //
         else if(GameState == 7){
-            animator.SetBool("Idle", true);
-            animator.SetBool("Jump", false);
-            GameState = 0;
+           
         }
         //转向环心
         //
@@ -218,6 +220,20 @@ public class PlayerController : MonoBehaviour {
 
     private void OnCollisionEnter(Collision coll)
     {
+		if (GameState == 7 && coll.collider.tag == "Untagged") {
+			transform.DORotate(new Vector3(transform.eulerAngles.x, 180, transform.eulerAngles.z), 0.2f, RotateMode.Fast).OnComplete(() =>
+				{
+					transform.DOKill(false);
+					if(gameObject.layer == 0){
+						rig.constraints = RigidbodyConstraints.FreezeAll;
+					}
+				});
+			GameState = 0;
+
+			animator.SetBool("Idle", true);
+			animator.SetBool("Jump", false);
+			RadarScan();
+		}
         if (GameState == 2)
         {
             if (coll.collider.tag == "Untagged")
@@ -254,7 +270,21 @@ public class PlayerController : MonoBehaviour {
                 //animator.SetBool("Jump", false);
             //}
         }
+
+		if (coll.collider.tag == "car"&&GameState!=9) {
+			GameState = 9;
+			rig.constraints = RigidbodyConstraints.None;
+			Vector3 carDirection= (transform.position-coll.transform.position).normalized;
+			rig.AddForce((carDirection + transform.up) * carForce, ForceMode.Force);
+
+			transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.WorldAxisAdd);
+			GameOver (3);
+
+			//RagdollDead.Instance.ChangeToDead ();
+		}
+
     }
+
 
     void ClearRing(){
         for (int i = ringManager.childCount - 1; i >= 0;i--){
@@ -270,8 +300,17 @@ public class PlayerController : MonoBehaviour {
     {
 		if (other.tag == "hole") {
 			StartCoroutine (AddForceInHole ());
+			//GameState = 6;
+			//StartCoroutine (debug());
 		}
     }
+
+	IEnumerator debug(){
+		while (true) {
+			Debug.Log (GameState);
+			yield return new WaitForSeconds(0.2f);
+		}
+	}
 
 	IEnumerator AddForceInHole(){
 		int i = 3;
@@ -287,8 +326,8 @@ public class PlayerController : MonoBehaviour {
 		if (other.tag == "hole")
 		{
 			//Vector3 offSet = new Vector3(10, 0, 10);
-			city.transform.position += new Vector3(0, -100, 0);
-			Invoke ("ExitHole", 2);
+			city.transform.position += new Vector3(0, -50, 0);
+			//Invoke ("ExitHole", 2);
 
 		}
 	}
@@ -334,12 +373,13 @@ public class PlayerController : MonoBehaviour {
     //蓄力旋转
     bool isRotate = false;
     IEnumerator RotateMid()
-    {
+	{
+		
         if (!isRotate)
-        {
+		{
             isRotate = true;
             while (true)
-            {
+			{
                 transform.Rotate(new Vector3(1, 0, 0), -0.1f);
                 //yield return null;
                 yield return new WaitForSeconds(0.1f);

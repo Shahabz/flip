@@ -97,29 +97,35 @@ public class CameraRotate : MonoBehaviour
         //}
         //yDeg = ClampAngle(yDeg, yMinLimit, yMaxLimit);
 
-        // 设置相机旋转
-        desiredRotation = Quaternion.Euler(yDeg, xDeg, 0);
-        currentRotation = transform.rotation;
+		if (PlayerController.Instance.GameState != 6&&PlayerController.Instance.GameState != 7) {
+			// 设置相机旋转
+			desiredRotation = Quaternion.Euler (yDeg, xDeg, 0);
+			currentRotation = transform.rotation;
 
+			rotation = Quaternion.Lerp (currentRotation, desiredRotation, Time.deltaTime * zoomDampening);
+			transform.rotation = rotation;
 
-        rotation = Quaternion.Lerp(currentRotation, desiredRotation, Time.deltaTime * zoomDampening);
-        transform.rotation = rotation;
-
-
-
-        // 影响scrollwheel变焦距离
-        //desiredDistance -= Input.GetAxis("Mouse ScrollWheel") * Time.deltaTime * zoomRate * Mathf.Abs(desiredDistance);
-        ////变焦最小/最大
-        //desiredDistance = Mathf.Clamp(desiredDistance, minDistance, maxDistance);
-        ////平滑变焦
-        //currentDistance = Mathf.Lerp(currentDistance, desiredDistance, Time.deltaTime * zoomDampening);
-
+			// 影响scrollwheel变焦距离
+			//desiredDistance -= Input.GetAxis("Mouse ScrollWheel") * Time.deltaTime * zoomRate * Mathf.Abs(desiredDistance);
+			////变焦最小/最大
+			//desiredDistance = Mathf.Clamp(desiredDistance, minDistance, maxDistance);
+			////平滑变焦
+			//currentDistance = Mathf.Lerp(currentDistance, desiredDistance, Time.deltaTime * zoomDampening);
      
-        //target.position = Vector3.Lerp(target.position, targetTO.position, Time.deltaTime * 5);
+			//target.position = Vector3.Lerp(target.position, targetTO.position, Time.deltaTime * 5);
+		 
+			position = target.position - (rotation * Vector3.forward * currentDistance + targetOffset);
+			transform.position = position;
+		} else {			
+			desiredRotation = Quaternion.Euler (80, xDeg, 0);
+			currentRotation = transform.rotation;
 
- 
-        position = target.position - (rotation * Vector3.forward * currentDistance + targetOffset);
-        transform.position = position;
+			rotation = Quaternion.Lerp (currentRotation, desiredRotation, Time.deltaTime * zoomDampening);
+			transform.rotation = rotation;
+
+			position = target.position - (rotation * Vector3.forward * currentDistance + targetOffset);
+			transform.position = position;
+		}
     }
 
     private static float ClampAngle(float angle, float min, float max)

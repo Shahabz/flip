@@ -22,7 +22,7 @@ AnimatorController:
     m_Controller: {fileID: 0}
   - m_Name: Speed_f
     m_Type: 1
-    m_DefaultFloat: 0
+    m_DefaultFloat: 0.2
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 0}
@@ -899,7 +899,7 @@ AnimatorStateMachine:
     m_Position: {x: 264, y: -12, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102108466822341060}
-    m_Position: {x: 299, y: 53, z: 0}
+    m_Position: {x: 252, y: -84, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
