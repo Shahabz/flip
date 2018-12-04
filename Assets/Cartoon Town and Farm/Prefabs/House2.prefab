@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 4250596819181164}
   - component: {fileID: 65374456277124614}
   m_Layer: 0
-  m_Name: pos_small (1)
+  m_Name: pos_small
   m_TagString: RingPos
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

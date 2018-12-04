@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 4686787879448846}
   - component: {fileID: 65679975322185738}
   m_Layer: 0
-  m_Name: apos_big
+  m_Name: pos_big
   m_TagString: RingPos
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

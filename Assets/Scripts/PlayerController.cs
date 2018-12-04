@@ -355,13 +355,13 @@ public class PlayerController : MonoBehaviour {
 
     //判断踩中的环
     string CheckRing(){
-        if(rings.Contains("ring1(Clone)")){
+		if(rings.Contains("ring1(Clone)")||rings.Contains("ring1_mid(Clone)")||rings.Contains("ring1_small(Clone)")){
             rings.Clear();
             return "ring1";
-        }else if(rings.Contains("ring2(Clone)")){
+		}else if(rings.Contains("ring2(Clone)")||rings.Contains("ring2_mid(Clone)")||rings.Contains("ring2_small(Clone)")){
             rings.Clear();
             return "ring2";
-        }else if (rings.Contains("ring3(Clone)")){
+		}else if (rings.Contains("ring3(Clone)")||rings.Contains("ring3_mid(Clone)")||rings.Contains("ring3_small(Clone)")){
             rings.Clear();
             return "ring3";
         }else{

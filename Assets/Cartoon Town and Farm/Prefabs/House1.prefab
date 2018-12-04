@@ -114,7 +114,7 @@ GameObject:
   - component: {fileID: 4624658427645454}
   - component: {fileID: 65253052839675494}
   m_Layer: 0
-  m_Name: pos_small (1)
+  m_Name: pos_small
   m_TagString: RingPos
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -143,7 +143,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 1
+  m_Convex: 0
   m_CookingOptions: 14
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 4300000, guid: 1837334ea9dca3a49bc9af9a75383eb4, type: 3}

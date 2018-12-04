@@ -58,6 +58,7 @@ public class RingManager : MonoBehaviour {
 
 	public Transform GenerateHole(Vector3 pos)
     {
+		
 		return Instantiate(hole.transform, pos, Quaternion.identity);
         //hole.transform.position = pos;
         //hole.transform.DOLocalMoveY(hole.transform.localPosition.y - 20, 0.3f, false);
