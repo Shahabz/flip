@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 400004}
   - component: {fileID: 3300004}
   - component: {fileID: 2300004}
+  - component: {fileID: 65050506589434422}
   m_Layer: 0
   m_Name: Billboard1_alpha
   m_TagString: Untagged
@@ -314,6 +315,18 @@ Transform:
   m_Father: {fileID: 400006}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &65050506589434422
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100004}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 4.750546, y: 0, z: 2.1658776}
+  m_Center: {x: 0.000022888184, y: 6.955911, z: 0.0000038146973}
 --- !u!65 &65944644330156958
 BoxCollider:
   m_ObjectHideFlags: 1

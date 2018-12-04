@@ -63,12 +63,21 @@ public class Radar : MonoBehaviour {
             }
             else
             {
-                RingManager.Instance.GenerateRings(ringPos);
+				int size = 1;
+				if (ringName.EndsWith ("small")) {
+					size = 1;
+				} else if (ringName.EndsWith ("mid")) {
+					size = 2;
+				} else if (ringName.EndsWith ("big")) {
+					size = 3;
+				}
+				RingManager.Instance.GenerateRings(ringPos,size);
 				jumpCount++;
             }
             
         }
     }
+
 
 
     private void OnTriggerEnter(Collider other)

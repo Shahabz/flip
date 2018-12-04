@@ -61,7 +61,7 @@ GameObject:
   - component: {fileID: 400006}
   - component: {fileID: 3300004}
   - component: {fileID: 2300004}
-  - component: {fileID: 6500010}
+  - component: {fileID: 64496286757302662}
   m_Layer: 0
   m_Name: Pipe1E
   m_TagString: Untagged
@@ -612,18 +612,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 4.0038943, y: 4.6067905, z: 3.0575402}
   m_Center: {x: 2.1121547, y: 1.04462, z: 0}
---- !u!65 &6500010
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100006}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 4.726179, y: 4.7535605, z: 4.4315095}
-  m_Center: {x: -2.1560102, y: 1.118005, z: 0.6869848}
 --- !u!65 &6500012
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -821,6 +809,20 @@ Transform:
   m_Father: {fileID: 400000}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!64 &64496286757302662
+MeshCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100006}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 0
+  m_CookingOptions: 14
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 4300000, guid: 6049b0506c728d54b847c5681313827d, type: 3}
 --- !u!65 &65009713829720860
 BoxCollider:
   m_ObjectHideFlags: 1

@@ -4,8 +4,10 @@ using UnityEngine;
 using DG.Tweening;
 
 public class RingManager : MonoBehaviour {
-
-    public Transform[] targetRing;
+	
+	public Transform[] targetRingSmall;
+    public Transform[] targetRingMid;
+	public Transform[] targetRingBig;
     public GameObject hole;
 
     static RingManager instance;
@@ -28,11 +30,21 @@ public class RingManager : MonoBehaviour {
         }
     }
 
-    public void GenerateRings(Vector3 pos)
+	public void GenerateRings(Vector3 pos,int size)
     {
+		
+		Transform[] targetTrans = targetRingSmall;
 
-        List<Transform> rings = new List<Transform>();
-        foreach (Transform trans in targetRing)
+		if (size == 1) {
+			targetTrans = targetRingSmall;
+		} else if (size == 2) {
+			targetTrans = targetRingMid;
+		} else {
+			targetTrans = targetRingBig;
+		}
+
+		List<Transform> rings = new List<Transform>();
+		foreach (Transform trans in targetTrans)
         {
             GameObject go = Instantiate(trans.gameObject, transform);
             go.transform.position = pos + new Vector3(0, 20, 0);

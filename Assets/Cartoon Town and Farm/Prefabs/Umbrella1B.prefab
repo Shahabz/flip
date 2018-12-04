@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3300000}
   - component: {fileID: 2300000}
   - component: {fileID: 13600000}
+  - component: {fileID: 65006578769678118}
   m_Layer: 0
   m_Name: Umbrella1B
   m_TagString: Untagged
@@ -127,6 +128,18 @@ Transform:
   m_Father: {fileID: 400000}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &65006578769678118
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 4.2153897, y: 1.1600876, z: 4.2153893}
+  m_Center: {x: 0, y: 3.7294993, z: 0}
 --- !u!65 &65674558169786800
 BoxCollider:
   m_ObjectHideFlags: 1

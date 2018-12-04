@@ -10,6 +10,7 @@ GameObject:
   - component: {fileID: 400000}
   - component: {fileID: 3300000}
   - component: {fileID: 2300000}
+  - component: {fileID: 65719354777487338}
   m_Layer: 0
   m_Name: Streetlight_el1B
   m_TagString: Untagged
@@ -27,6 +28,7 @@ GameObject:
   - component: {fileID: 400002}
   - component: {fileID: 3300002}
   - component: {fileID: 2300002}
+  - component: {fileID: 65589417938391024}
   m_Layer: 0
   m_Name: Streetlight_el2
   m_TagString: Untagged
@@ -259,8 +261,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.64037216, y: 7.2010736, z: 0.5545786}
-  m_Center: {x: 0, y: 3.3741312, z: 0}
+  m_Size: {x: 0.3047388, y: 7.2010736, z: 0.29949927}
+  m_Center: {x: 0.020138366, y: 3.3741312, z: -0.020140653}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -301,6 +303,18 @@ Transform:
   m_Father: {fileID: 400006}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &65589417938391024
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.0890447, y: 1.6634974, z: 0.8798073}
+  m_Center: {x: 0.63045347, y: 0.07285786, z: 0.16149618}
 --- !u!65 &65624836245235654
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -313,3 +327,15 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &65719354777487338
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.1849719, y: 0.82124805, z: 0.31837863}
+  m_Center: {x: -0.69272316, y: 0.015889108, z: -0.000002861023}

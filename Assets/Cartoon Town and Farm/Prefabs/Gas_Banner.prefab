@@ -11,6 +11,9 @@ GameObject:
   - component: {fileID: 3300000}
   - component: {fileID: 2300000}
   - component: {fileID: 6500000}
+  - component: {fileID: 65665170824112092}
+  - component: {fileID: 65519257706378122}
+  - component: {fileID: 65906838456182890}
   m_Layer: 0
   m_Name: Gas_Banner
   m_TagString: Untagged
@@ -138,3 +141,39 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &65519257706378122
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 5.452968, y: 2.3562813, z: 0.98275864}
+  m_Center: {x: 0.000015258782, y: 10.304342, z: -0.025047231}
+--- !u!65 &65665170824112092
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 5.452968, y: 0.3530426, z: 1.5336473}
+  m_Center: {x: 0.000015258781, y: 8.902077, z: -0.000007629391}
+--- !u!65 &65906838456182890
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.0910475, y: 0.45310497, z: 1.5336473}
+  m_Center: {x: -0.013021821, y: 0.13894224, z: -0.000007629391}
