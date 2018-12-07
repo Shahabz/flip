@@ -108,6 +108,8 @@ GameObject:
   - component: {fileID: 65908346917139182}
   - component: {fileID: 65873614988225776}
   - component: {fileID: 65488717131301586}
+  - component: {fileID: 65056055069331806}
+  - component: {fileID: 65393808064372522}
   m_Layer: 0
   m_Name: collider
   m_TagString: Untagged
@@ -199,7 +201,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1529000581873318}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8.87, y: 4.532, z: 0.82}
+  m_LocalPosition: {x: 8.87, y: 4.64, z: 0.82}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 400000}
@@ -212,7 +214,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1196898419517136}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.25, y: 4.532, z: 0.82}
+  m_LocalPosition: {x: 4.25, y: 4.71, z: 0.82}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 400000}
@@ -244,6 +246,18 @@ Transform:
   m_Father: {fileID: 400000}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &65056055069331806
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1127382158419606}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 10.012, y: 0.5171051, z: 5.603591}
+  m_Center: {x: 7.1478367, y: 4.3299513, z: 0.7243339}
 --- !u!65 &65070235989698292
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -316,6 +330,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &65393808064372522
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1127382158419606}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 5.7634907, y: 0.5171051, z: 14.198279}
+  m_Center: {x: -0.93410134, y: 4.3299513, z: -0.10583896}
 --- !u!65 &65444934485472190
 BoxCollider:
   m_ObjectHideFlags: 1

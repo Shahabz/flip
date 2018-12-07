@@ -14,7 +14,11 @@ public class PlayerController : MonoBehaviour {
     Animator animator;
 
     [SerializeField]
-    GameObject city;    
+    GameObject city;   
+	[SerializeField]
+	Transform alarm;
+
+	GameObject[] startsPos;
 
     //跳跃力
     [SerializeField]
@@ -34,6 +38,10 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     Transform ringManager;
 
+	[SerializeField]
+	GameObject boxGlove;
+
+	string[] perfectWord;
     //
     bool isCoroutining = false;
 
@@ -52,6 +60,10 @@ public class PlayerController : MonoBehaviour {
 	public bool isHoling = false;
 	[HideInInspector]
 	public Transform holeTarget;
+	//获取环的位置
+	public Vector3 ringPos;
+
+	Vector3 currentColl;
 
     //分数字典
     Dictionary<string, int> scoreDic;
@@ -66,8 +78,12 @@ public class PlayerController : MonoBehaviour {
     //7:进入新关卡
     //8:转向环心
 	//9:被撞
+	//10:蓄力过久
     [HideInInspector]
     public int GameState = 0;
+
+	[HideInInspector]
+	public bool Starting = false;
 
     static PlayerController instance;
     public static PlayerController Instance{
@@ -80,6 +96,8 @@ public class PlayerController : MonoBehaviour {
 
     //初始化
     void Start () {
+		//transform.position = InitPlayerPos();
+
         rig = GetComponent<Rigidbody>();
         playerColl = GetComponent<BoxCollider>();
         animator = GetComponent<Animator>();
@@ -90,114 +108,154 @@ public class PlayerController : MonoBehaviour {
         scoreDic = new Dictionary<string, int>();
         InitScoreDic();
 
-        RadarScan();
+        //RadarScan();
 
+		perfectWord = new string[]{ "GREAT", "GOOD", "PERFECT", "PRETTY" };
+	}
+
+	//tap开始游戏
+	public void GameStart(){		
+		Physics.gravity = new Vector3(0, gravity, 0);
+		playerColl.enabled = false;
+		bodyColl.enabled = false;
+		GameState = 2;
+		animator.SetBool ("Storage", true);
+		animator.SetBool ("Idle", false);
+		StartCoroutine (CheckRotation ());
+
+	}
+	//检查tap后的主角角度
+	IEnumerator CheckRotation(){		
+		while (true) {
+			transform.eulerAngles += new Vector3 (-Time.deltaTime*7, 0, 0);
+			if (transform.eulerAngles.x < 353 && transform.eulerAngles.x > 300) {		
+				rig.constraints = RigidbodyConstraints.None;
+				animator.SetBool ("Storage", false);
+				animator.SetBool ("Jump", true);
+				rig.AddForce (transform.up * force, ForceMode.Force);
+				transform.DOLocalRotate (new Vector3 (-transform.eulerAngles.x, 0, 0), 1.5f, RotateMode.LocalAxisAdd);
+				Invoke ("ReColl", 1);
+				yield break;
+			}
+			yield return null;
+		}
+	}
+
+	Vector3 InitPlayerPos(){
+		startsPos = GameObject.FindGameObjectsWithTag ("start");
+		Vector3 startPos = startsPos [Random.Range (0, startsPos.Length)].transform.position;
+		return startPos;
 	}
 
     void Update()
     {
-        //待机状态
-        //按住蓄力
-        if (GameState == 0)
-        {    
-           // if (Input.GetKeyDown(KeyCode.Space))
-            if(Input.GetMouseButtonDown(0))
-            {
-                GameState = 1;
-                playerColl.enabled = false;
-				bodyColl.enabled = false;
-                animator.SetBool("Storage", true);
-                animator.SetBool("Idle", false);
-            }
+		if (Starting) {
+			//待机状态
+			//按住蓄力
+			if (GameState == 0) {    
+				// if (Input.GetKeyDown(KeyCode.Space))
+				if (Input.GetMouseButtonDown (0)) {
+					GameState = 1;
+					playerColl.enabled = false;
+					bodyColl.enabled = false;
+					animator.SetBool ("Storage", true);
+					animator.SetBool ("Idle", false);
+				}
 
-        }
+			}
+			
         //蓄力状态
         //松开跳跃，蓄力过久死亡
-        else if (GameState == 1)
-        {
-            //if (Input.GetKeyUp(KeyCode.Space))
+        else if (GameState == 1) {
+				//if (Input.GetKeyUp(KeyCode.Space))
+				//蓄力过久警告
+				if (transform.eulerAngles.x < 340 && transform.eulerAngles.x > 250) {
+				
+					StartCoroutine (AlarmStorage ());
+				}
 
-            if(transform.eulerAngles.x<300&& transform.eulerAngles.x>250)
-            {
-                rig.constraints = RigidbodyConstraints.None;
-                GameState = 3;
-                playerColl.enabled = true;
-				bodyColl.enabled = true;
-                animator.SetBool("Storage", false);
-                animator.SetBool("Dead", true);
-            }
-            else{
-                // transform.Rotate(new Vector3(1, 0, 0), -0.5f);
+				if (transform.eulerAngles.x < 300 && transform.eulerAngles.x > 250) {
+					rig.constraints = RigidbodyConstraints.None;
+					// GameState = 3;
+					GameState = 10;
+					playerColl.enabled = true;
+					bodyColl.enabled = true;
+					animator.SetBool ("Storage", false);
+					animator.SetBool ("Dead", true);
+					//GameOverByBoxglove (transform.position + new Vector3 (0, -5, 0));
+				} else {
+					// transform.Rotate(new Vector3(1, 0, 0), -0.5f);
                
-                StartCoroutine(coroutine);
+					StartCoroutine (coroutine);
 
-            }
+				}
 
-            if (Input.GetMouseButtonUp(0))
-            {
-                // Debug.Log(transform.eulerAngles.x - 360);
-                rig.constraints = RigidbodyConstraints.None;
-                Physics.gravity = new Vector3(0, gravity, 0);
-                rig.AddForce(transform.up * force, ForceMode.Force);
-                transform.DOLocalRotate(new Vector3(-transform.eulerAngles.x, 0, 0), 1.5f, RotateMode.LocalAxisAdd);
+				if (Input.GetMouseButtonUp (0)) {
+					// Debug.Log(transform.eulerAngles.x - 360);
+					rig.constraints = RigidbodyConstraints.None;
+					Physics.gravity = new Vector3 (0, gravity, 0);
+					rig.AddForce (transform.up * force, ForceMode.Force);
+					transform.DOLocalRotate (new Vector3 (-transform.eulerAngles.x, 0, 0), 1.5f, RotateMode.LocalAxisAdd);
 
-                GameState = 2;
-				Invoke("ReColl", 1);
-                animator.SetBool("Storage", false);
-                animator.SetBool("Jump", true);
+					GameState = 2;
+					Invoke ("ReColl", 1);
+					animator.SetBool ("Storage", false);
+					animator.SetBool ("Jump", true);
 
-                isRotate = false;
-                StopCoroutine(coroutine);
+					isRotate = false;
+					StopCoroutine (coroutine);
 
+					Camera.main.DOFieldOfView (70, 1).OnComplete (() => {
+						Camera.main.DOFieldOfView (60, 1);
+					});
 
-            }
+					alarm.gameObject.SetActive (false);
+					isAlarming = false;
+				}
 
-        }
+			}
         //跳跃状态
         //可以发生碰撞
-        else if (GameState == 2)
-        {
+        else if (GameState == 2) {
            
 
-        }
+			}
         //死亡状态
         //延迟2秒重开游戏
-        else if (GameState == 3)
-        {
-            //Invoke("GameOver", 2);
+        else if (GameState == 3) {
+				//Invoke("GameOver", 2);
        		
-        }
+			}
         //获胜状态
         //
-        else if (GameState == 4)
-        {
+        else if (GameState == 4) {
            
-        }
+			}
         //结算状态
         //
-        else if (GameState == 5)
-        {
+        else if (GameState == 5) {
         
-        }
+			}
         //进入黑洞
         //
-        else if(GameState == 6){
+        else if (GameState == 6) {
 
-           // Destroy(GameObject.FindWithTag("DeadPlane"));
+				// Destroy(GameObject.FindWithTag("DeadPlane"));
 
-           // Invoke("EnterNewGame", 3);
+				// Invoke("EnterNewGame", 3);
 
-        }
+			}
         //抵达新关卡
         //
-        else if(GameState == 7){
+        else if (GameState == 7) {
            
-        }
+			}
         //转向环心
         //
-        else if(GameState == 8){
+        else if (GameState == 8) {
 
-        }
+			}
+		}
     }
 
     void ReColl(){
@@ -221,7 +279,7 @@ public class PlayerController : MonoBehaviour {
     private void OnCollisionEnter(Collision coll)
     {
 		if (GameState == 7 && coll.collider.tag == "Untagged") {
-			transform.DORotate(new Vector3(transform.eulerAngles.x, 180, transform.eulerAngles.z), 0.2f, RotateMode.Fast).OnComplete(() =>
+			transform.DORotate(new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z), 0.2f, RotateMode.Fast).OnComplete(() =>
 				{
 					transform.DOKill(false);
 					if(gameObject.layer == 0){
@@ -233,43 +291,40 @@ public class PlayerController : MonoBehaviour {
 			animator.SetBool("Idle", true);
 			animator.SetBool("Jump", false);
 			RadarScan();
+
+			if(Level.Instance.slider.value == 1){
+				PlayerPrefs.SetInt ("Level", PlayerPrefs.GetInt ("Level", 1) + 1);
+				Level.Instance.UpdateLevel ();
+			}
 		}
         if (GameState == 2)
         {
             if (coll.collider.tag == "Untagged")
             {
-
+				currentColl = coll.contacts [0].point;
 
                 CheckRingByRay();
-                //ScoreGenerate();
-                //coll.collider.tag = "Untagged";
-                //HouseGenerate.Instance.GenerateHouse(coll.transform.position);
-                transform.DORotate(new Vector3(transform.eulerAngles.x, 180, transform.eulerAngles.z), 0.2f, RotateMode.Fast).OnComplete(() =>
-                {
-                   		transform.DOKill(false);
-						if(gameObject.layer == 0){
-							rig.constraints = RigidbodyConstraints.FreezeAll;
-						}
-                });
+                
                 GameState = 0;
-                Invoke("ScoreGenerate", 0.1f);
-                animator.SetBool("Idle", true);
-                animator.SetBool("Jump", false);
+                Invoke("ScoreGenerate", 0.05f);
+				Invoke("GenerateNewRing", 0.1f);
+                
+				transform.DORotate(new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z), 0.2f, RotateMode.Fast).OnComplete(() =>
+					{
+						transform.DOKill(false);
+						if(gameObject.layer == 0){
+							if(GameState!=3)
+								rig.constraints = RigidbodyConstraints.FreezeAll;
 
-                //生成新的环                
-                ClearRing();
-                RadarScan();
-
+						}
+					});                
             }
 
-            //if (coll.collider.name == "DeadPlane")
-            //{
-                //GameState = 3;
-                //Destroy(coll.gameObject);
-                //animator.SetBool("Dead", true);
-                //animator.SetBool("Jump", false);
-            //}
         }
+
+		if (GameState == 10) {
+			GameOverByBoxglove (transform.position + new Vector3 (0, -5, 0));
+		}
 
 		if (coll.collider.tag == "car"&&GameState!=9) {
 			GameState = 9;
@@ -277,13 +332,38 @@ public class PlayerController : MonoBehaviour {
 			Vector3 carDirection= (transform.position-coll.transform.position).normalized;
 			rig.AddForce((carDirection + transform.up) * carForce, ForceMode.Force);
 
-			transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.WorldAxisAdd);
+			transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.LocalAxisAdd);
 			GameOver (3);
 
 			//RagdollDead.Instance.ChangeToDead ();
 		}
 
     }
+
+	void GenerateNewRing(){
+		//生成新的环    
+		if (GameState != 3) {			
+			ClearRing ();
+			RadarScan ();
+			animator.SetBool("Idle", true);
+			animator.SetBool("Jump", false);
+		}
+	}
+
+	void GameOverByBoxglove(Vector3 golvePos){
+		GameState = 3;
+		rig.constraints = RigidbodyConstraints.None;
+		Vector3 carDirection= (transform.position-golvePos).normalized;
+		rig.AddForce((carDirection + transform.up) * carForce, ForceMode.Force);
+		transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.WorldAxisAdd);
+		GameOver (3);
+
+		Transform boxGloveTrans = Instantiate (boxGlove, transform.position, Quaternion.identity).transform;
+		boxGloveTrans.up = carDirection;
+		boxGloveTrans.DOMove (transform.position+carDirection*2, 0.3f, false);
+
+		alarm.gameObject.SetActive (false);
+	}
 
 
     void ClearRing(){
@@ -301,11 +381,11 @@ public class PlayerController : MonoBehaviour {
 		if (other.tag == "hole") {
 			StartCoroutine (AddForceInHole ());
 			//GameState = 6;
-			//StartCoroutine (debug());
+			//StartCoroutine (_debug());
 		}
     }
 
-	IEnumerator debug(){
+	IEnumerator _debug(){
 		while (true) {
 			Debug.Log (GameState);
 			yield return new WaitForSeconds(0.2f);
@@ -329,6 +409,21 @@ public class PlayerController : MonoBehaviour {
 			city.transform.position += new Vector3(0, -50, 0);
 			//Invoke ("ExitHole", 2);
 
+			Vector3 nextLevelPos = InitPlayerPos();
+
+			//transform.localPosition = new Vector3 (nextLevelPos.x, transform.localPosition.y, nextLevelPos.z);
+			transform.DOLocalMoveX (nextLevelPos.x, 0.1f, false).SetDelay(0.3f);
+			transform.DOLocalMoveZ (nextLevelPos.z, 0.1f, false).SetDelay(0.3f).OnComplete(()=>{
+				//transform.DORotate (new Vector3 (transform.eulerAngles.x, 180, transform.eulerAngles.z), 2f, RotateMode.Fast);
+				rig.constraints = RigidbodyConstraints.FreezePositionX;
+				rig.constraints = RigidbodyConstraints.FreezePositionZ;
+			});
+
+//			BlackHole blackHole = Camera.main.GetComponent<BlackHole> ();
+//			if (blackHole) {
+//				blackHole.enabled = false;
+//			}
+
 		}
 	}
 
@@ -349,23 +444,40 @@ public class PlayerController : MonoBehaviour {
     }		
 
     //生成分数
-    void ScoreGenerate(){
-        TipPop.GenerateTip("+"+scoreDic[CheckRing()], 0.5f);
+    void ScoreGenerate(){		
+		if (CheckRing () == "normal") {	
+			
+			if (Vector3.Distance (ringPos, transform.position) > 2) {
+				GameOverByBoxglove (currentColl);
+				TipPop.GenerateTip ("MISS", 0.5f);					
+				return;
+			}
+		
+
+//			GameOverByBoxglove (currentColl);
+//			TipPop.GenerateTip("MISS", 0.5f);
+//			return;
+		}
+
+		TipPop.GenerateTip("+"+scoreDic[CheckRing()], 0.5f);
+//		TipPop.GenerateTip(perfectWord[Random.Range(0,perfectWord.Length)], 0.5f);
+
+		rings.Clear();
     }
+
+	void GenerateScoreDaily(){
+		TipPop.GenerateTip("+"+scoreDic[CheckRing()], 0.5f);
+	}
 
     //判断踩中的环
     string CheckRing(){
 		if(rings.Contains("ring1(Clone)")||rings.Contains("ring1_mid(Clone)")||rings.Contains("ring1_small(Clone)")){
-            rings.Clear();
             return "ring1";
 		}else if(rings.Contains("ring2(Clone)")||rings.Contains("ring2_mid(Clone)")||rings.Contains("ring2_small(Clone)")){
-            rings.Clear();
             return "ring2";
 		}else if (rings.Contains("ring3(Clone)")||rings.Contains("ring3_mid(Clone)")||rings.Contains("ring3_small(Clone)")){
-            rings.Clear();
             return "ring3";
         }else{
-            rings.Clear();
             return "normal";
         }
     }
@@ -404,4 +516,32 @@ public class PlayerController : MonoBehaviour {
     void ScanOver(){
         radar.SetActive(false);
     }
+
+	bool isAlarming  = false;
+	IEnumerator AlarmStorage(){	
+		if (!isAlarming) {
+			isAlarming = true;
+			alarm.gameObject.SetActive (true);
+			alarm.forward = Camera.main.transform.position - transform.position;
+			SpriteRenderer sprite = alarm.GetComponent<SpriteRenderer> ();
+			float alpha = 1;
+			bool changeAlpha = false;
+			while (true) {
+				if (changeAlpha) {
+					alpha -= Time.deltaTime*10;
+					if (alpha < 0.01f) {
+						changeAlpha = !changeAlpha;
+					}
+				} else {
+					alpha += Time.deltaTime*10;
+					if (alpha > 0.99f) {
+						changeAlpha = !changeAlpha;
+					}
+				}
+				sprite.color = new Color (1, 1, 1, alpha);
+				yield return null;
+			}
+
+		}
+	}
 }

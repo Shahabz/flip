@@ -28,7 +28,7 @@ Transform:
   m_LocalPosition: {x: 238.912, y: 0, z: 316.81854}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4471651637593484}
+  - {fileID: 4631344748661216}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -97,15 +97,15 @@ Prefab:
   m_SourcePrefab: {fileID: 0}
   m_RootGameObject: {fileID: 100000}
   m_IsPrefabAsset: 1
---- !u!1 &1667476147964006
+--- !u!1 &1680550390935218
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4471651637593484}
-  - component: {fileID: 65973235633196504}
+  - component: {fileID: 4631344748661216}
+  - component: {fileID: 65748825478955468}
   m_Layer: 0
   m_Name: apos_mid
   m_TagString: RingPos
@@ -113,12 +113,12 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4471651637593484
+--- !u!4 &4631344748661216
 Transform:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1667476147964006}
+  m_GameObject: {fileID: 1680550390935218}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 2.49, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -126,12 +126,12 @@ Transform:
   m_Father: {fileID: 400000}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &65973235633196504
+--- !u!65 &65748825478955468
 BoxCollider:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1667476147964006}
+  m_GameObject: {fileID: 1680550390935218}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1

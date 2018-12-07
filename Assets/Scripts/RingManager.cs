@@ -30,7 +30,7 @@ public class RingManager : MonoBehaviour {
         }
     }
 
-	public void GenerateRings(Vector3 pos,int size)
+	public Transform GenerateRings(Vector3 pos,int size)
     {
 		
 		Transform[] targetTrans = targetRingSmall;
@@ -54,6 +54,7 @@ public class RingManager : MonoBehaviour {
 
         StartCoroutine(MoveRing(0.4f, rings));
 
+		return rings [2];
     }
 
 	public Transform GenerateHole(Vector3 pos)

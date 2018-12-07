@@ -81,7 +81,8 @@ public class CameraRotate : MonoBehaviour
         currentRotation = transform.rotation;
         desiredRotation = transform.rotation;
 
-        xDeg = Vector3.Angle(Vector3.right, transform.right)-120;
+        //xDeg = Vector3.Angle(Vector3.right, transform.right)-120;
+		xDeg = 90;
         yDeg = Vector3.Angle(Vector3.up, transform.up);
     }
 
