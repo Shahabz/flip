@@ -20,6 +20,9 @@ public class PlayerController : MonoBehaviour {
 
 	GameObject[] startsPos;
 
+	//游戏内的UI
+	GameObject[] gameUIs;
+
     //跳跃力
     [SerializeField]
     float force = 500;
@@ -63,7 +66,16 @@ public class PlayerController : MonoBehaviour {
 	//获取环的位置
 	public Vector3 ringPos;
 
+	//关卡起始位置
+	[HideInInspector]
+	public Vector3 nextLevelPos;
+
 	Vector3 currentColl;
+
+	//城市移动的偏差
+	Vector3 cityOffset;
+
+	Radar radarScript;
 
     //分数字典
     Dictionary<string, int> scoreDic;
@@ -82,6 +94,8 @@ public class PlayerController : MonoBehaviour {
     [HideInInspector]
     public int GameState = 0;
 
+	//int floorNumber = 0;
+
 	[HideInInspector]
 	public bool Starting = false;
 
@@ -96,6 +110,8 @@ public class PlayerController : MonoBehaviour {
 
     //初始化
     void Start () {
+		//PlayerPrefs.DeleteAll ();
+
 		//transform.position = InitPlayerPos();
 
         rig = GetComponent<Rigidbody>();
@@ -105,12 +121,19 @@ public class PlayerController : MonoBehaviour {
         coroutine = RotateMid();
 
         rings = new List<string>();
-        scoreDic = new Dictionary<string, int>();
+        scoreDic = new Dictionary<string, int>();	
         InitScoreDic();
+		cityOffset = new Vector3 ();
 
         //RadarScan();
+		radarScript = radar.GetComponent<Radar>();
 
 		perfectWord = new string[]{ "GREAT", "GOOD", "PERFECT", "PRETTY" };
+
+		gameUIs = GameObject.FindGameObjectsWithTag ("GameUI");
+		HideGameUI (true);
+		//floorNumber = 0;
+
 	}
 
 	//tap开始游戏
@@ -122,8 +145,41 @@ public class PlayerController : MonoBehaviour {
 		animator.SetBool ("Storage", true);
 		animator.SetBool ("Idle", false);
 		StartCoroutine (CheckRotation ());
-
 	}
+		
+
+	//重新开始关卡
+	public void ReGame(){
+		//重置位置
+		Debug.Log (SaveManager.Instance.ReadLevelPos () [0]);
+		transform.position = SaveManager.Instance.ReadLevelPos () [0];
+
+		//重置状态
+		GameState = 0;
+		rig.constraints = RigidbodyConstraints.FreezeAll;
+		transform.eulerAngles = Vector3.zero;
+		//清除环
+		ClearRing ();
+		//清除黑洞
+		if(holeTarget){
+			Destroy (holeTarget.gameObject);
+		}
+		//重新扫描,清空已跳跃的数量
+		radarScript.jumpCount = 0;
+		radarScript.levelPos.Clear ();
+		RadarScan();
+
+		//重置动画
+		animator.SetBool("Idle", true);
+		animator.SetBool("Jump", false);
+		animator.SetBool("Storage", false);
+		animator.SetBool("Dead", false);
+
+		//删除拳套
+		if (boxGloveTrans)
+			Destroy (boxGloveTrans.gameObject);
+	}
+
 	//检查tap后的主角角度
 	IEnumerator CheckRotation(){		
 		while (true) {
@@ -154,7 +210,8 @@ public class PlayerController : MonoBehaviour {
 			//按住蓄力
 			if (GameState == 0) {    
 				// if (Input.GetKeyDown(KeyCode.Space))
-				if (Input.GetMouseButtonDown (0)) {
+				//if (Input.GetMouseButtonDown (0)) {
+				if (Input.GetKeyDown(KeyCode.P)) {
 					GameState = 1;
 					playerColl.enabled = false;
 					bodyColl.enabled = false;
@@ -174,23 +231,24 @@ public class PlayerController : MonoBehaviour {
 					StartCoroutine (AlarmStorage ());
 				}
 
-				if (transform.eulerAngles.x < 300 && transform.eulerAngles.x > 250) {
-					rig.constraints = RigidbodyConstraints.None;
-					// GameState = 3;
-					GameState = 10;
-					playerColl.enabled = true;
-					bodyColl.enabled = true;
-					animator.SetBool ("Storage", false);
-					animator.SetBool ("Dead", true);
-					//GameOverByBoxglove (transform.position + new Vector3 (0, -5, 0));
-				} else {
+				//if (transform.eulerAngles.x < 300 && transform.eulerAngles.x > 250) {
+//					rig.constraints = RigidbodyConstraints.None;
+//					GameState = 10;
+//					playerColl.enabled = true;
+//					bodyColl.enabled = true;
+//					animator.SetBool ("Storage", false);
+//					animator.SetBool ("Dead", true);
+				//} else {
 					// transform.Rotate(new Vector3(1, 0, 0), -0.5f);
                
 					StartCoroutine (coroutine);
 
-				}
+				//}
 
-				if (Input.GetMouseButtonUp (0)) {
+
+
+				//if (Input.GetMouseButtonUp (0)) {
+				if (Input.GetKeyUp(KeyCode.P)) {
 					// Debug.Log(transform.eulerAngles.x - 360);
 					rig.constraints = RigidbodyConstraints.None;
 					Physics.gravity = new Vector3 (0, gravity, 0);
@@ -290,12 +348,18 @@ public class PlayerController : MonoBehaviour {
 
 			animator.SetBool("Idle", true);
 			animator.SetBool("Jump", false);
-			RadarScan();
+
+			//nextLevelPos = new Vector3 (nextLevelPos.x, transform.position.y, nextLevelPos.z);
 
 			if(Level.Instance.slider.value == 1){
 				PlayerPrefs.SetInt ("Level", PlayerPrefs.GetInt ("Level", 1) + 1);
 				Level.Instance.UpdateLevel ();
+
 			}
+
+			RadarScan();
+
+			HideGameUI (false);
 		}
         if (GameState == 2)
         {
@@ -323,6 +387,7 @@ public class PlayerController : MonoBehaviour {
         }
 
 		if (GameState == 10) {
+			//ReGame ();
 			GameOverByBoxglove (transform.position + new Vector3 (0, -5, 0));
 		}
 
@@ -333,9 +398,10 @@ public class PlayerController : MonoBehaviour {
 			rig.AddForce((carDirection + transform.up) * carForce, ForceMode.Force);
 
 			transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.LocalAxisAdd);
-			GameOver (3);
 
-			//RagdollDead.Instance.ChangeToDead ();
+			//GameOver (3);
+			Invoke("ReGame",3);
+
 		}
 
     }
@@ -350,15 +416,21 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
+	Transform boxGloveTrans;
 	void GameOverByBoxglove(Vector3 golvePos){
+		if (GameState == 3) {
+			return;
+		}
 		GameState = 3;
 		rig.constraints = RigidbodyConstraints.None;
 		Vector3 carDirection= (transform.position-golvePos).normalized;
 		rig.AddForce((carDirection + transform.up) * carForce, ForceMode.Force);
 		transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.WorldAxisAdd);
-		GameOver (3);
 
-		Transform boxGloveTrans = Instantiate (boxGlove, transform.position, Quaternion.identity).transform;
+		//GameOver (3);
+		Invoke("ReGame",3);
+
+		boxGloveTrans = Instantiate (boxGlove, transform.position, Quaternion.identity).transform;
 		boxGloveTrans.up = carDirection;
 		boxGloveTrans.DOMove (transform.position+carDirection*2, 0.3f, false);
 
@@ -405,20 +477,73 @@ public class PlayerController : MonoBehaviour {
 	{
 		if (other.tag == "hole")
 		{
-			//Vector3 offSet = new Vector3(10, 0, 10);
-			city.transform.position += new Vector3(0, -50, 0);
-			//Invoke ("ExitHole", 2);
 
-			Vector3 nextLevelPos = InitPlayerPos();
+			//记录下降层数
+			//radarScript.floorNumber = PlayerPrefs.GetInt ("Floor", 0);
+			//PlayerPrefs.SetInt ("Floor", floorNumber);
+			//floorNumber++;
+
+			//通关
+			if (Level.Instance.slider.value == 1) {
+				//进入新关卡清除之前关卡的信息
+				SaveManager.Instance.ClearPosList ();
+				radarScript.levelPos.Clear ();
+
+				//存储起始位置
+				nextLevelPos = InitPlayerPos ();
+				PlayerPrefs.SetFloat ("nextLevelPosX", nextLevelPos.x);
+				PlayerPrefs.SetFloat ("nextLevelPosZ", nextLevelPos.z);
+				radarScript.levelPos.Add (nextLevelPos);
+				//计算城市偏差
+				//cityOffset = transform.position-new Vector3(nextLevelPos.x,0, nextLevelPos.x);
+				//起始位置对应在第一层的位置
+				radarScript.levelPos.Add (nextLevelPos + new Vector3 (cityOffset.x, 50, cityOffset.z));
+				SaveManager.Instance.SaveLevelPos (radarScript.levelPos);
+
+				//清除黑洞
+				if(holeTarget){
+					Destroy (holeTarget.gameObject);
+				}
+
+			}
+
+
+			city.transform.position += new Vector3(0, -100, 0);
+
+			if (SaveManager.Instance.ReadLevelPos ().Count > 0) {
+				nextLevelPos = SaveManager.Instance.ReadLevelPos () [1];
+			} else {
+				nextLevelPos = InitPlayerPos ();
+				PlayerPrefs.SetFloat ("nextLevelPosX", nextLevelPos.x);
+				PlayerPrefs.SetFloat ("nextLevelPosZ", nextLevelPos.z);
+			}
 
 			//transform.localPosition = new Vector3 (nextLevelPos.x, transform.localPosition.y, nextLevelPos.z);
-			transform.DOLocalMoveX (nextLevelPos.x, 0.1f, false).SetDelay(0.3f);
-			transform.DOLocalMoveZ (nextLevelPos.z, 0.1f, false).SetDelay(0.3f).OnComplete(()=>{
+
+			//移动人物到目标点上方
+//			transform.DOLocalMoveX (nextLevelPos.x, 0.1f, false).SetDelay(0.3f);
+//			transform.DOLocalMoveZ (nextLevelPos.z, 0.1f, false).SetDelay(0.3f).OnComplete(()=>{
+//				//transform.DORotate (new Vector3 (transform.eulerAngles.x, 180, transform.eulerAngles.z), 2f, RotateMode.Fast);
+//				rig.constraints = RigidbodyConstraints.FreezePositionX;
+//				rig.constraints = RigidbodyConstraints.FreezePositionZ;
+//			});
+
+			//反向移动城市
+			rig.constraints = RigidbodyConstraints.FreezePositionX;
+			rig.constraints = RigidbodyConstraints.FreezePositionZ;
+			//Debug.Log (transform.position);
+			//Debug.Log (nextLevelPos);
+			//Debug.Log (transform.position - nextLevelPos);
+			//cityOffset = transform.position-nextLevelPos;
+			cityOffset = transform.position-new Vector3(PlayerPrefs.GetFloat ("nextLevelPosX", nextLevelPos.x),0,PlayerPrefs.GetFloat ("nextLevelPosZ", nextLevelPos.x));
+			Vector3 cityPos = city.transform.position;
+			city.transform.DOLocalMoveX (cityPos.x+cityOffset.x, 0.1f, false).SetDelay(0.3f);
+			city.transform.DOLocalMoveZ (cityPos.z+cityOffset.z, 0.1f, false).SetDelay(0.3f).OnComplete(()=>{
+				//纠正人物方向
 				//transform.DORotate (new Vector3 (transform.eulerAngles.x, 180, transform.eulerAngles.z), 2f, RotateMode.Fast);
-				rig.constraints = RigidbodyConstraints.FreezePositionX;
-				rig.constraints = RigidbodyConstraints.FreezePositionZ;
 			});
 
+			//玄幻黑洞
 //			BlackHole blackHole = Camera.main.GetComponent<BlackHole> ();
 //			if (blackHole) {
 //				blackHole.enabled = false;
@@ -492,12 +617,23 @@ public class PlayerController : MonoBehaviour {
             isRotate = true;
             while (true)
 			{
-                transform.Rotate(new Vector3(1, 0, 0), -0.1f);
+				float speed = -0.1f;
+
+				if (transform.eulerAngles.x < 300 && transform.eulerAngles.x > 250) {
+					//transform.Rotate(new Vector3(1, 0, 0), 0.1f);
+					speed = 0.1f;
+				} else if(transform.eulerAngles.x>=355){
+					//transform.Rotate(new Vector3(1, 0, 0), -0.1f);
+					speed = -0.1f;
+				}
+
+				transform.Rotate(new Vector3(1, 0, 0), speed);
                 //yield return null;
                 yield return new WaitForSeconds(0.1f);
             }
         }
     }
+		
 
     //初始化环分数
     void InitScoreDic(){
@@ -544,4 +680,11 @@ public class PlayerController : MonoBehaviour {
 
 		}
 	}
+
+	void HideGameUI(bool hide){
+		foreach (GameObject go in gameUIs) {
+			go.SetActive (!hide);
+		}
+	}
+		
 }

@@ -36,9 +36,9 @@ public class RingManager : MonoBehaviour {
 		Transform[] targetTrans = targetRingSmall;
 
 		if (size == 1) {
-			targetTrans = targetRingSmall;
+			targetTrans = targetRingBig;
 		} else if (size == 2) {
-			targetTrans = targetRingMid;
+			targetTrans = targetRingBig;
 		} else {
 			targetTrans = targetRingBig;
 		}
