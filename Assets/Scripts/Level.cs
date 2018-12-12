@@ -17,18 +17,20 @@ public class Level : MonoBehaviour {
 		instance = this;
 	}
 
+	//关卡进度显示时刷新进度和关卡数字
 	void OnEnable(){
 		UpdateLevel ();
 		UpdateSlider (0);
 	}
 
-
+	//刷新关卡数
 	public void UpdateLevel(){
 		int level = PlayerPrefs.GetInt ("Level", 1);
 		curLevel.text = level.ToString ();
 		nextLevel.text = (level + 1).ToString ();
 	}
 
+	//刷新关卡进度
 	public void UpdateSlider(float value){
 		slider.value = value;
 	}

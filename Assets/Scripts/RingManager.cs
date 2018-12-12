@@ -19,6 +19,7 @@ public class RingManager : MonoBehaviour {
         instance = this;
     }
 
+	//将环一个接一个从上至下的生成
     IEnumerator MoveRing(float time,List<Transform> trans)
     {
         int length = trans.Count;
@@ -30,6 +31,7 @@ public class RingManager : MonoBehaviour {
         }
     }
 
+	//在给定位置生成给定尺寸的环
 	public Transform GenerateRings(Vector3 pos,int size)
     {
 		
@@ -50,19 +52,16 @@ public class RingManager : MonoBehaviour {
             go.transform.position = pos + new Vector3(0, 20, 0);
             rings.Add(go.transform);
         }
-        //PlayerController.Instance.currentRing = rings[0];
 
         StartCoroutine(MoveRing(0.4f, rings));
 
 		return rings [2];
     }
 
+	//在指定位置生成黑洞
 	public Transform GenerateHole(Vector3 pos)
-    {
-		
+    {		
 		return Instantiate(hole.transform, pos, Quaternion.identity);
-        //hole.transform.position = pos;
-        //hole.transform.DOLocalMoveY(hole.transform.localPosition.y - 20, 0.3f, false);
     }
     
 }

@@ -10,7 +10,7 @@ public class FadeUI : MonoBehaviour {
 		StartCoroutine (FadeText ());
 	}
 		
-
+	//文字透明度渐变
 	IEnumerator FadeText(){
 		Text text = GetComponent<Text> ();
 		while (true) {			
