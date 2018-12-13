@@ -13,9 +13,6 @@ public class Radar : MonoBehaviour {
 	//获取已存储的位置
 	List<Vector3> curLevelPos;
 
-//	[SerializeField]
-	//BlackHole blackHole;
-
     [SerializeField]
     Transform player;
 	[SerializeField]
@@ -53,35 +50,14 @@ public class Radar : MonoBehaviour {
     private void OnEnable()
     {
 		saveManager = SaveManager.Instance;
-
         Ring = new List<Transform>();
 		Hole = new List<Transform>();
-
 		//设置重生点
 		if (levelPos.Count == 0) {
 			PlayerController.Instance.ReGamePos = player.position;
 		}
-
-		//如果是全新的关卡，存储玩家当前位置作为重置位置，存储第一层的位置作为重开位置
-//		if (levelPos.Count == 0) {
-//			levelPos.Add (player.position);
-//			levelPos.Add (player.position);
-//			saveManager.SaveLevelPos (levelPos);
-//		}
-
-		//如果是
-//		if (levelPos.Count == 2) {
-//			levelPos [0] = player.position;
-//			Vector3 cityOffset = PlayerController.Instance.cityOffset;
-//			if (cityOffset!=null) {
-//				levelPos [1] = player.position-new Vector3(cityOffset.x,0,cityOffset.z);
-//			}
-//			saveManager.SaveLevelPos (levelPos);
-//		}
-
 		//获取存储好的位置
 		curLevelPos = saveManager.ReadLevelPos ();
-
     }
 
     //雷达检测到可到达的环则改变主角面向，改变摄像机面向，生成环

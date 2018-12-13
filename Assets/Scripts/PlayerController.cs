@@ -12,17 +12,13 @@ public class PlayerController : MonoBehaviour {
 	BoxCollider bodyColl;
     //玩家动画控制器
     Animator animator;
-
     [SerializeField]
     GameObject city;   
 	[SerializeField]
 	Transform alarm;
-
 	GameObject[] startsPos;
-
 	//游戏内的UI
 	GameObject[] gameUIs;
-
     //跳跃力
     [SerializeField]
     float force = 500;
@@ -35,27 +31,23 @@ public class PlayerController : MonoBehaviour {
     //死亡触发面
     [SerializeField]
     GameObject deadPlane;
-
     [SerializeField]
     GameObject radar;
     [SerializeField]
     Transform ringManager;
-
 	[SerializeField]
 	GameObject boxGlove;
-
 	[SerializeField]
 	GameObject firstHole;
-
 	string[] perfectWord;
-    //
     bool isCoroutining = false;
-
     //按住蓄力协程
     IEnumerator coroutine;
-
     //环列表
     List<string> rings;
+	//金币箱子
+	[SerializeField]
+	GameObject goldBox;
 
     //当前的目标环
    // [HideInInspector]
@@ -135,6 +127,7 @@ public class PlayerController : MonoBehaviour {
 		InitScoreDic();
 
 		floorNumber = 0;
+		isRotate = false;
 	}
 
 	//tap开始游戏,配合开始按钮使用
@@ -146,6 +139,24 @@ public class PlayerController : MonoBehaviour {
 		animator.SetBool ("Storage", true);
 		animator.SetBool ("Idle", false);
 		StartCoroutine (CheckRotation ());
+	}
+
+	//重置关卡
+	[SerializeField]
+	Transform initPos;
+	[SerializeField]
+	Transform initPrePos;
+	public void ChangeLevel(){	
+		SaveManager.Instance.SetVector3 ("TotalCityOffset", Vector3.zero);
+		Camera.main.transform.position += initPos.position - initPrePos.position;
+		Physics.gravity = new Vector3(0, gravity, 0);
+		GameState = 2;
+		animator.SetBool ("Idle", false);
+		animator.SetBool ("Storage", true);
+		animator.SetBool ("Storage", false);
+		animator.SetBool ("Jump", true);
+		rig.constraints = RigidbodyConstraints.None;
+		transform.position = initPos.position;
 	}
 		
 
@@ -182,6 +193,7 @@ public class PlayerController : MonoBehaviour {
 		if (boxGloveTrans)
 			Destroy (boxGloveTrans.gameObject);
 	}
+		
 
 	//检查tap后的主角角度,用于开始按钮
 	IEnumerator CheckRotation(){		
@@ -229,27 +241,11 @@ public class PlayerController : MonoBehaviour {
         //蓄力状态
         //松开跳跃，蓄力过久死亡
         	else if (GameState == 1) {
-				
-				//蓄力过久红色感叹号警告，准备取消该功能
-				if (transform.eulerAngles.x < 340 && transform.eulerAngles.x > 250) {				
-					StartCoroutine (AlarmStorage ());
-				}
-
-				//if (transform.eulerAngles.x < 300 && transform.eulerAngles.x > 250) {
-//					rig.constraints = RigidbodyConstraints.None;
-//					GameState = 10;
-//					playerColl.enabled = true;
-//					bodyColl.enabled = true;
-//					animator.SetBool ("Storage", false);
-//					animator.SetBool ("Dead", true);
-				//} else {
-				// transform.Rotate(new Vector3(1, 0, 0), -0.5f);
                
 				//开始改变角度
-				StartCoroutine (coroutine);
-
-				//}
-
+				if (isRotate == false) {
+					StartCoroutine (RotateMid ());
+				}
 
 				//松开P停止蓄力，接触角色限制，改变重力，往头朝向发射，旋转一圈，进入跳跃状态，1秒后恢复碰撞，开始跳跃动画，停止旋转，摄像机扩大视野范围，然后缩小视野范围，取消警告
 				if (Input.GetKeyUp (KeyCode.P)) {
@@ -265,7 +261,7 @@ public class PlayerController : MonoBehaviour {
 					animator.SetBool ("Jump", true);
 
 					isRotate = false;
-					StopCoroutine (coroutine);
+					//StopCoroutine (coroutine);
 
 					Camera.main.DOFieldOfView (70, 1).OnComplete (() => {
 						Camera.main.DOFieldOfView (60, 1);
@@ -325,7 +321,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	//进入主界面
-    void GameOver(){
+	public void GameOver(){
         ResetGame.Instance.OnResetBtn();
     }
 
@@ -337,15 +333,7 @@ public class PlayerController : MonoBehaviour {
     {
 		//离开黑洞后状态为进入新关卡，此时若碰到一般建筑则...
 		if (GameState == 7 && coll.collider.tag == "Untagged") {
-//			//0.2s后锁定主角
-			transform.DORotate(new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z), 0.2f, RotateMode.Fast).OnComplete(() =>
-				{
-					transform.DOKill(false);
-					if(gameObject.layer == 0){
-						rig.constraints = RigidbodyConstraints.FreezeAll;
-					}
-				});
-
+			rig.constraints = RigidbodyConstraints.FreezeAll;
 			//状态变为待机，播放待机动画
 			GameState = 0;
 			animator.SetBool("Idle", true);
@@ -375,22 +363,14 @@ public class PlayerController : MonoBehaviour {
                 Invoke("ScoreGenerate", 0.05f);
 				Invoke("GenerateNewRing", 0.1f);
                 //一段时间后锁定主角
-				transform.DORotate(new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z), 0.2f, RotateMode.Fast).OnComplete(() =>
-					{
-						transform.DOKill(false);
-						if(gameObject.layer == 0){
-							if(GameState!=3)
-								rig.constraints = RigidbodyConstraints.FreezeAll;
-
-						}
-					});                
+				rig.constraints = RigidbodyConstraints.FreezeAll;
             }
 
         }
 
 		//如果蓄力过度则被拳头打飞
 		if (GameState == 10) {
-			GameOverByBoxglove (transform.position + new Vector3 (0, -5, 0));
+			//GameOverByBoxglove (transform.position + new Vector3 (0, -5, 0));
 		}
 
 		//如果被车撞了，状态变为被车撞，解除主角限制，往被撞的方向施加力，给予主角随机旋转，三秒后重开游戏
@@ -466,7 +446,7 @@ public class PlayerController : MonoBehaviour {
 			rig.AddForce ((holeTarget.position - transform.position)*50);
 			yield return new WaitForSeconds (0.2f);
 		}
-	}
+	}		
 
 	[HideInInspector]
 	//记录进入黑洞后的玩家位置
@@ -476,10 +456,14 @@ public class PlayerController : MonoBehaviour {
 		//如果离开了黑洞
 		if (other.tag == "hole")
 		{
-			
+			GameObject[] inholes = GameObject.FindGameObjectsWithTag ("Player");
+			foreach (GameObject go in inholes) {
+				go.layer = 0;
+			}
+
 			//删除存在的黑洞
 			if (firstHole) {
-				Destroy (firstHole);
+				firstHole.SetActive(false);
 			}
 			if(holeTarget){
 				Destroy(holeTarget.Find("Hole").gameObject);
@@ -493,50 +477,6 @@ public class PlayerController : MonoBehaviour {
 			//锁定主角的X和Z坐标
 			rig.constraints = RigidbodyConstraints.FreezePositionX;
 			rig.constraints = RigidbodyConstraints.FreezePositionZ;
-
-			//通关处理
-//			if (Level.Instance.slider.value == 1) {				
-//				//进入新关卡清空环数量，清空存储环位置的缓存
-//				SaveManager.Instance.ClearPosList ();
-//				radarScript.levelPos.Clear ();
-//				//生成新的随机点
-//				//nextLevelPos = InitPlayerPos ();
-//				//PlayerPrefs.SetFloat ("nextLevelPosX", nextLevelPos.x);
-//				//PlayerPrefs.SetFloat ("nextLevelPosZ", nextLevelPos.z);
-//				//PlayerPrefs.SetFloat ("nextLevelPosY", nextLevelPos.y-100);
-//
-//				//radarScript.levelPos.Add (new Vector3 (nextLevelPos.x, nextLevelPos.y - 100, nextLevelPos.z));
-//				//计算城市偏差
-//				//cityOffset = transform.position-new Vector3(nextLevelPos.x,0, nextLevelPos.z);
-//				//起始位置对应在第一层的位置
-//				//radarScript.levelPos.Add (nextLevelPos);
-//				//radarScript.levelPos.Add (nextLevelPos - new Vector3 (cityOffset.x, 0, cityOffset.z));
-//
-//				//SaveManager.Instance.SaveLevelPos (radarScript.levelPos);
-//			}
-
-
-			//第一次进入随机生成位置，之后取上次的记录
-			//if (SaveManager.Instance.ReadLevelPos ().Count > 0) {				
-			//	nextLevelPos = SaveManager.Instance.ReadLevelPos () [1];
-
-			//} else {
-			//	nextLevelPos = InitPlayerPos ();
-				//PlayerPrefs.SetFloat ("nextLevelPosX", nextLevelPos.x);
-				//PlayerPrefs.SetFloat ("nextLevelPosZ", nextLevelPos.z);
-				//PlayerPrefs.SetFloat ("nextLevelPosY", nextLevelPos.y-100);
-			//}
-
-			//transform.localPosition = new Vector3 (nextLevelPos.x, transform.localPosition.y, nextLevelPos.z);
-
-			//移动人物到目标点上方
-//			transform.DOLocalMoveX (nextLevelPos.x, 0.1f, false).SetDelay(0.3f);
-//			transform.DOLocalMoveZ (nextLevelPos.z, 0.1f, false).SetDelay(0.3f).OnComplete(()=>{
-//				//transform.DORotate (new Vector3 (transform.eulerAngles.x, 180, transform.eulerAngles.z), 2f, RotateMode.Fast);
-//				rig.constraints = RigidbodyConstraints.FreezePositionX;
-//				rig.constraints = RigidbodyConstraints.FreezePositionZ;
-//			});
-
 
 			//反向移动城市
 			//穿过黑洞后城镇往下移动100米，获得一个随机出生点
@@ -552,7 +492,7 @@ public class PlayerController : MonoBehaviour {
 					cityOffset = new Vector3 (preCityoffset.x, 0, preCityoffset.z);
 				}
 				totalCityOffset += cityOffset;
-			} else if(floorNumber>1) {
+			} else if(floorNumber>1) {				
 				SaveManager.Instance.ClearPosList ();
 				radarScript.levelPos.Clear ();
 				cityOffset = transform.position - new Vector3 (nextLevelPos.x, 0, nextLevelPos.z);
@@ -563,9 +503,12 @@ public class PlayerController : MonoBehaviour {
 
 			Vector3 cityPos = city.transform.position;
 			city.transform.DOLocalMoveX (cityPos.x + cityOffset.x, 0.1f, false);
-			city.transform.DOLocalMoveZ (cityPos.z + cityOffset.z, 0.1f, false);			
-			//纠正人物方向
-			//transform.DORotate (new Vector3 (transform.eulerAngles.x, 180, transform.eulerAngles.z), 2f, RotateMode.Fast);
+			city.transform.DOLocalMoveZ (cityPos.z + cityOffset.z, 0.1f, false).OnComplete(()=>{
+				//纠正人物方向
+				transform.DORotate (new Vector3 (0, 180, 0), 1.5f, RotateMode.Fast);
+			});	
+			//新关卡生成盒子
+			Instantiate (goldBox, nextLevelPos+new Vector3(cityOffset.x,0,cityOffset.z),Quaternion.identity);
 			//记录本次离开黑洞后的玩家位置，供下次使用
 			transformPre = transform.position;
 		}
@@ -612,24 +555,32 @@ public class PlayerController : MonoBehaviour {
     }
 
     //蓄力旋转
-    bool isRotate = false;
+    bool isRotate;
     IEnumerator RotateMid()
 	{		
         if (!isRotate)
 		{
             isRotate = true;
 			float MaxAngle = 0;
-			Debug.Log (MaxAngle);
-			float speed = -0.1f;
-            while (true)
-			{				
+			float totalAngle = 0;
+			float speed = -1f;
+			while (isRotate)
+			{			
 				MaxAngle += speed;
+				totalAngle += Mathf.Abs(speed);
+				if (totalAngle > 400&&!isAlarming) {
+					StartCoroutine (AlarmStorage ());
+				}
+				if(totalAngle>590&&isAlarming){
+					GameOverByBoxglove (transform.position + new Vector3 (0, -5, 0));
+					yield break;
+				}
 				if (Mathf.Abs(MaxAngle) > 60) {
 					speed *= -1;
 					MaxAngle = 0;
-				}
+				}			
 				transform.Rotate(new Vector3(1, 0, 0), speed);
-                yield return new WaitForSeconds(0.1f);
+				yield return null;
             }
         }
     }

@@ -50,14 +50,16 @@ public class CameraRotate : MonoBehaviour
         //yDeg = X;
         //xDeg = Y;
     }
-    //void OnEnable()
-    //{
-    //    Init();
-    //    desiredDistance = CameDistance;
-    //    yDeg = X;
-    //    xDeg = Y;
+    void OnEnable()
+	{
+		//    Init();
+		//    desiredDistance = CameDistance;
+		//    yDeg = X;
+		//    xDeg = Y;
 
-    //}
+		Init ();
+		desiredDistance = CameDistance;
+	}
 
     
 

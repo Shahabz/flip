@@ -15,7 +15,7 @@ public class FadeUI : MonoBehaviour {
 		Text text = GetComponent<Text> ();
 		while (true) {			
 			text.DOFade (1, 1).OnComplete (()=>{
-				text.DOFade (0.4f, 1);
+				text.DOFade (0.65f, 1);
 			});
 			yield return new WaitForSeconds(2);
 		}
