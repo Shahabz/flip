@@ -199,7 +199,7 @@ public class PlayerController : MonoBehaviour {
 	IEnumerator CheckRotation(){		
 		while (true) {
 			transform.eulerAngles += new Vector3 (-Time.deltaTime*7, 0, 0);
-			if (transform.eulerAngles.x < 353 && transform.eulerAngles.x > 300) {		
+			if (transform.eulerAngles.x < 350 && transform.eulerAngles.x > 300) {		
 				rig.constraints = RigidbodyConstraints.None;
 				animator.SetBool ("Storage", false);
 				animator.SetBool ("Jump", true);

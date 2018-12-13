@@ -10,7 +10,7 @@ public class BoxBow : MonoBehaviour {
 	Rigidbody playerRig;
 
 	public void BoxBoon(){
-		transform.DOShakeScale (0.5f, 1.5f, 8, 90, true).SetEase(Ease.InBack).OnComplete(()=>{
+		transform.DOShakeScale (0.5f, 1.5f, 10, 90, true).SetEase(Ease.InBack).OnComplete(()=>{
 			transform.DOScale(new Vector3(2f,0.3f,2f),0.3f).OnComplete(()=>{
 				transform.DOScale(new Vector3(1.5f,0.5f,1.5f),0.15f).OnComplete(()=>{
 					Destroy(gameObject);
