@@ -18,6 +18,8 @@ public class Radar : MonoBehaviour {
 
     [SerializeField]
     Transform player;
+	[SerializeField]
+	Transform city;
 
 	[HideInInspector]
 	public int jumpCount;
@@ -55,22 +57,27 @@ public class Radar : MonoBehaviour {
         Ring = new List<Transform>();
 		Hole = new List<Transform>();
 
-		//如果是全新的关卡，存储玩家当前位置作为重置位置，存储第一层的位置作为重开位置
+		//设置重生点
 		if (levelPos.Count == 0) {
-			levelPos.Add (player.position);
-			levelPos.Add (player.position);
-			saveManager.SaveLevelPos (levelPos);
+			PlayerController.Instance.ReGamePos = player.position;
 		}
 
+		//如果是全新的关卡，存储玩家当前位置作为重置位置，存储第一层的位置作为重开位置
+//		if (levelPos.Count == 0) {
+//			levelPos.Add (player.position);
+//			levelPos.Add (player.position);
+//			saveManager.SaveLevelPos (levelPos);
+//		}
+
 		//如果是
-		if (levelPos.Count == 2) {
-			levelPos [0] = player.position;
-			Vector3 cityOffset = PlayerController.Instance.cityOffset;
-			if (cityOffset!=null) {
-				levelPos [1] = player.position-new Vector3(cityOffset.x,0,cityOffset.z);
-			}
-			saveManager.SaveLevelPos (levelPos);
-		}
+//		if (levelPos.Count == 2) {
+//			levelPos [0] = player.position;
+//			Vector3 cityOffset = PlayerController.Instance.cityOffset;
+//			if (cityOffset!=null) {
+//				levelPos [1] = player.position-new Vector3(cityOffset.x,0,cityOffset.z);
+//			}
+//			saveManager.SaveLevelPos (levelPos);
+//		}
 
 		//获取存储好的位置
 		curLevelPos = saveManager.ReadLevelPos ();
@@ -114,14 +121,14 @@ public class Radar : MonoBehaviour {
 				}	
 
 				//如果当前位置已存储，则使用已存储的位置
-				if (curLevelPos.Count > jumpCount + 2) {	
-					ringPos = curLevelPos[jumpCount+2]+player.position;
+				if (curLevelPos.Count > jumpCount) {	
+					ringPos = curLevelPos[jumpCount]+city.position;
 				}
 					
 				Transform holeTrans = RingManager.Instance.GenerateHole(ringPos);
 
 				//保存黑洞位置偏移
-				levelPos.Add (ringPos-player.position);
+				levelPos.Add (ringPos-city.position);
 				saveManager.SaveLevelPos (levelPos);
 
 				//透视黑洞
@@ -147,8 +154,8 @@ public class Radar : MonoBehaviour {
 				}
 
 				//如果当前位置已存储，则使用已存储的位置
-				if (curLevelPos.Count>jumpCount+2) {
-					ringPos = curLevelPos[jumpCount+2]+player.position;
+				if (curLevelPos.Count>jumpCount) {
+					ringPos = curLevelPos[jumpCount]+city.position;
 				}				
 
 				Transform ringTrans = RingManager.Instance.GenerateRings(ringPos,size);
@@ -156,7 +163,7 @@ public class Radar : MonoBehaviour {
 				//传递环对象
 				PlayerController.Instance.ringPos = ringPos;
 				//保存环偏移
-				levelPos.Add (ringPos-player.position);
+				levelPos.Add (ringPos-city.position);
 				saveManager.SaveLevelPos (levelPos);
 				//透视环
 				Perspective.Instance.StartCoroutine (Perspective.Instance.CheckObstacle (ringTrans.gameObject));

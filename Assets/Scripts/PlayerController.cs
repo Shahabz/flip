@@ -98,7 +98,7 @@ public class PlayerController : MonoBehaviour {
     [HideInInspector]
     public int GameState = 0;
 
-	//int floorNumber = 0;
+	int floorNumber;
 
 	[HideInInspector]
 	public bool Starting = false;
@@ -134,7 +134,7 @@ public class PlayerController : MonoBehaviour {
 
 		InitScoreDic();
 
-		//floorNumber = 0;
+		floorNumber = 0;
 	}
 
 	//tap开始游戏,配合开始按钮使用
@@ -150,10 +150,11 @@ public class PlayerController : MonoBehaviour {
 		
 
 	//重新开始关卡
+	//当前出生点
+	public Vector3 ReGamePos = Vector3.zero;
 	public void ReGame(){
 		//重置位置
-		Debug.Log (SaveManager.Instance.ReadLevelPos () [0]);
-		transform.position = SaveManager.Instance.ReadLevelPos () [0];
+		transform.position = ReGamePos;
 
 		//重置状态
 		GameState = 0;
@@ -467,14 +468,15 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-
+	[HideInInspector]
+	//记录进入黑洞后的玩家位置
+	public Vector3 transformPre = Vector3.zero;
 	void OnTriggerExit(Collider other)
 	{
-		Debug.Log (other.name);
-		Debug.Log (transform.position);
 		//如果离开了黑洞
 		if (other.tag == "hole")
 		{
+			
 			//删除存在的黑洞
 			if (firstHole) {
 				Destroy (firstHole);
@@ -486,48 +488,44 @@ public class PlayerController : MonoBehaviour {
 			//记录下降层数
 			//radarScript.floorNumber = PlayerPrefs.GetInt ("Floor", 0);
 			//PlayerPrefs.SetInt ("Floor", floorNumber);
-			//floorNumber++;
+			floorNumber++;
 
 			//锁定主角的X和Z坐标
 			rig.constraints = RigidbodyConstraints.FreezePositionX;
 			rig.constraints = RigidbodyConstraints.FreezePositionZ;
 
 			//通关处理
-			if (Level.Instance.slider.value == 1) {				
-				//进入新关卡清空环数量，清空存储环位置的缓存
-				SaveManager.Instance.ClearPosList ();
-				radarScript.levelPos.Clear ();
+//			if (Level.Instance.slider.value == 1) {				
+//				//进入新关卡清空环数量，清空存储环位置的缓存
+//				SaveManager.Instance.ClearPosList ();
+//				radarScript.levelPos.Clear ();
+//				//生成新的随机点
+//				//nextLevelPos = InitPlayerPos ();
+//				//PlayerPrefs.SetFloat ("nextLevelPosX", nextLevelPos.x);
+//				//PlayerPrefs.SetFloat ("nextLevelPosZ", nextLevelPos.z);
+//				//PlayerPrefs.SetFloat ("nextLevelPosY", nextLevelPos.y-100);
+//
+//				//radarScript.levelPos.Add (new Vector3 (nextLevelPos.x, nextLevelPos.y - 100, nextLevelPos.z));
+//				//计算城市偏差
+//				//cityOffset = transform.position-new Vector3(nextLevelPos.x,0, nextLevelPos.z);
+//				//起始位置对应在第一层的位置
+//				//radarScript.levelPos.Add (nextLevelPos);
+//				//radarScript.levelPos.Add (nextLevelPos - new Vector3 (cityOffset.x, 0, cityOffset.z));
+//
+//				//SaveManager.Instance.SaveLevelPos (radarScript.levelPos);
+//			}
 
-				//生成新的随机点
-				nextLevelPos = InitPlayerPos ();
-				PlayerPrefs.SetFloat ("nextLevelPosX", nextLevelPos.x);
-				PlayerPrefs.SetFloat ("nextLevelPosZ", nextLevelPos.z);
-				//PlayerPrefs.SetFloat ("nextLevelPosY", nextLevelPos.y-100);
-
-				//radarScript.levelPos.Add (new Vector3 (nextLevelPos.x, nextLevelPos.y - 100, nextLevelPos.z));
-				//计算城市偏差
-				//cityOffset = transform.position-new Vector3(nextLevelPos.x,0, nextLevelPos.z);
-				//起始位置对应在第一层的位置
-				radarScript.levelPos.Add (nextLevelPos);
-				radarScript.levelPos.Add (nextLevelPos - new Vector3 (cityOffset.x, 0, cityOffset.z));
-
-
-				SaveManager.Instance.SaveLevelPos (radarScript.levelPos);
-
-			}
-				
-			//穿过黑洞后城镇往下移动100米
-			city.transform.position += new Vector3(0, -100, 0);
 
 			//第一次进入随机生成位置，之后取上次的记录
-			if (SaveManager.Instance.ReadLevelPos ().Count > 0) {				
-				nextLevelPos = SaveManager.Instance.ReadLevelPos () [1];
-			} else {
-				nextLevelPos = InitPlayerPos ();
-				PlayerPrefs.SetFloat ("nextLevelPosX", nextLevelPos.x);
-				PlayerPrefs.SetFloat ("nextLevelPosZ", nextLevelPos.z);
-				PlayerPrefs.SetFloat ("nextLevelPosY", nextLevelPos.y-100);
-			}
+			//if (SaveManager.Instance.ReadLevelPos ().Count > 0) {				
+			//	nextLevelPos = SaveManager.Instance.ReadLevelPos () [1];
+
+			//} else {
+			//	nextLevelPos = InitPlayerPos ();
+				//PlayerPrefs.SetFloat ("nextLevelPosX", nextLevelPos.x);
+				//PlayerPrefs.SetFloat ("nextLevelPosZ", nextLevelPos.z);
+				//PlayerPrefs.SetFloat ("nextLevelPosY", nextLevelPos.y-100);
+			//}
 
 			//transform.localPosition = new Vector3 (nextLevelPos.x, transform.localPosition.y, nextLevelPos.z);
 
@@ -539,21 +537,37 @@ public class PlayerController : MonoBehaviour {
 //				rig.constraints = RigidbodyConstraints.FreezePositionZ;
 //			});
 
-			//反向移动城市
 
-			//cityOffset = transform.position-nextLevelPos;
-			cityOffset = transform.position-new Vector3(PlayerPrefs.GetFloat ("nextLevelPosX", nextLevelPos.x),0,PlayerPrefs.GetFloat ("nextLevelPosZ", nextLevelPos.z));
-			print (1);
-			totalCityOffset += cityOffset;
-			SaveManager.Instance.SetVector3 ("CityOffset", totalCityOffset);
+			//反向移动城市
+			//穿过黑洞后城镇往下移动100米，获得一个随机出生点
+			city.transform.position += new Vector3(0, -100, 0);
+			nextLevelPos = InitPlayerPos ();
+			//进入第一层时,历史记录为空则随机生成，否则使用历史记录
+			//第二层开始一直取随机位置
+			if (floorNumber == 1) {
+				Vector3 preCityoffset = SaveManager.Instance.GetVector3 ("TotalCityOffset");
+				if (preCityoffset == Vector3.zero) {
+					cityOffset = transform.position - new Vector3 (nextLevelPos.x, 0, nextLevelPos.z);
+				} else {
+					cityOffset = new Vector3 (preCityoffset.x, 0, preCityoffset.z);
+				}
+				totalCityOffset += cityOffset;
+			} else if(floorNumber>1) {
+				SaveManager.Instance.ClearPosList ();
+				radarScript.levelPos.Clear ();
+				cityOffset = transform.position - new Vector3 (nextLevelPos.x, 0, nextLevelPos.z);
+				totalCityOffset += transformPre - nextLevelPos;
+			}
+			//每一层记录城市总位移
+			SaveManager.Instance.SetVector3 ("TotalCityOffset", totalCityOffset);
 
 			Vector3 cityPos = city.transform.position;
-			city.transform.DOLocalMoveX (cityPos.x+cityOffset.x, 0.1f, false);
-			city.transform.DOLocalMoveZ (cityPos.z+cityOffset.z, 0.1f, false).OnComplete(()=>{
-				//纠正人物方向
-				//transform.DORotate (new Vector3 (transform.eulerAngles.x, 180, transform.eulerAngles.z), 2f, RotateMode.Fast);
-			});
-
+			city.transform.DOLocalMoveX (cityPos.x + cityOffset.x, 0.1f, false);
+			city.transform.DOLocalMoveZ (cityPos.z + cityOffset.z, 0.1f, false);			
+			//纠正人物方向
+			//transform.DORotate (new Vector3 (transform.eulerAngles.x, 180, transform.eulerAngles.z), 2f, RotateMode.Fast);
+			//记录本次离开黑洞后的玩家位置，供下次使用
+			transformPre = transform.position;
 		}
 	}
 
