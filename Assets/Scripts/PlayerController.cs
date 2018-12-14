@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
     //玩家刚体
@@ -107,6 +108,9 @@ public class PlayerController : MonoBehaviour {
     //初始化
     void Start () {
 		//PlayerPrefs.DeleteAll ();
+		if (PlayerPrefs.GetInt ("GuideScene", 0) == 0) {
+			SceneManager.LoadScene ("GuideScene");
+		}
 
         rig = GetComponent<Rigidbody>();
         playerColl = GetComponent<BoxCollider>();
