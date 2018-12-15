@@ -13,13 +13,14 @@ public class PlayerController : MonoBehaviour {
 	BoxCollider bodyColl;
     //玩家动画控制器
     Animator animator;
-    [SerializeField]
-    GameObject city;   
+	[HideInInspector]
+	public GameObject city;   
 	[SerializeField]
 	Transform alarm;
 	GameObject[] startsPos;
 	//游戏内的UI
 	GameObject[] gameUIs;
+	GameObject[] moneyUIs;
     //跳跃力
     [SerializeField]
     float force = 500;
@@ -122,6 +123,7 @@ public class PlayerController : MonoBehaviour {
 		cityOffset = new Vector3 ();
 		perfectWord = new string[]{ "GREAT", "GOOD", "PERFECT", "PRETTY" };
 
+		moneyUIs = GameObject.FindGameObjectsWithTag ("money");
 		gameUIs = GameObject.FindGameObjectsWithTag ("GameUI");
 		HideGameUI (true);
 
@@ -351,6 +353,7 @@ public class PlayerController : MonoBehaviour {
 			RadarScan();
 			//显示关卡UI
 			HideGameUI (false);
+			HideMoneyUI (false);
 		}
 
 		//如果是跳跃状态
@@ -439,6 +442,7 @@ public class PlayerController : MonoBehaviour {
 		if (other.tag == "hole") {
 			StartCoroutine (AddForceInHole ());
 			HideGameUI (true);
+			HideMoneyUI (true);
 		}
     }
 
@@ -643,5 +647,10 @@ public class PlayerController : MonoBehaviour {
 			go.SetActive (!hide);
 		}
 	}
-		
+
+	void HideMoneyUI(bool hide){		
+		foreach (GameObject go in moneyUIs) {
+			go.SetActive (!hide);
+		}
+	}
 }

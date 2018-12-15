@@ -15,8 +15,8 @@ public class Radar : MonoBehaviour {
 
     [SerializeField]
     Transform player;
-	[SerializeField]
-	Transform city;
+	[HideInInspector]
+	public Transform city;
 
 	[HideInInspector]
 	public int jumpCount;

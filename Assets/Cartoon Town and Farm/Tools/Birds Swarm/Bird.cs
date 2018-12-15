@@ -19,7 +19,7 @@ public class Bird : MonoBehaviour
 	private Vector3  lastPosition;
 	
 	// Use this for initialization
-	void Start ()
+	void OnEnable ()
 	{
 		anim = GetComponent<Animator>();
 		
@@ -41,7 +41,6 @@ public class Bird : MonoBehaviour
 			{
 				anim.SetInteger("AnimNum", Random.Range(0, animCount+1));
 				canChangeAnim = false;
-//				Debug.Log("Bird anim: " + anim.GetInteger("AnimNum"));
 			}
 		}
 		else

@@ -16,6 +16,7 @@ TagManager:
   - GameUI
   - StartUI
   - GoldBox
+  - money
   layers:
   - Default
   - TransparentFX
