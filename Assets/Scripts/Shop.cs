@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Shop : MonoBehaviour {
 	//hats[hatindex]为当前选择的帽子
@@ -57,7 +58,7 @@ public class Shop : MonoBehaviour {
 		}
 	}
 
-
+	//切换帽子选择，true为往右看，false往左看
 	void RotateCy(bool dir){		
 		float yAngle = transform.eulerAngles.y;
 		if ((rotateY >= 73f && dir == false) || (rotateY <= 14f + ((hats.Length - 2) * 60) && dir == true)) {
@@ -86,11 +87,10 @@ public class Shop : MonoBehaviour {
 				hatAnim.SetTrigger("ChangeHat");
 				animator.SetTrigger("ChangeHat");
 			});
-			//Debug.Log (hats [hatIndex].name);
+			transform.DOScale (0.6f,0.15f).OnComplete (()=>{
+				transform.DOScale (1f,0.15f);
+			});
 			UpdateBuyBtn(hatIndex);
-			PlayerPrefs.SetInt ("HatIndex", hatIndex);
-
-			SaveHatActive ();
 		}
 	}
 
@@ -121,18 +121,28 @@ public class Shop : MonoBehaviour {
 		}
 	}
 
+	//购买商品后更换材质，隐藏锁，保存购买信息，装备皮肤
 	public void OnBuyBtn(){
-		
+		if (Diamond.Instance.UseDiamond (price [hatIndex])) {
+			PlayerPrefs.SetInt (hats [hatIndex].name, 1);
+			skinRender [hatIndex].material = hatMats[hatIndex];
+			hats [hatIndex].transform.Find ("lock").gameObject.SetActive (false);
+			OnChooseBtn ();
+		}
 	}
 
-	public void OnChooseBtn(){
-		
+	//选择皮肤，下次打开商城自动切换到该皮肤
+	public void OnChooseBtn(){	
+		PlayerPrefs.SetString ("CurrentHat", hats [hatIndex].name);
+		PlayerPrefs.SetInt ("HatIndex", hatIndex);
+		SaveHatActive ();
 	}
 
 	void initHatPrice(){
 		price = new int[] {0,50,100,100,100,100,100,100,250,250,250,500,500,1000};
 	}
 
+	//保存当前帽子的显示和隐藏状态
 	void SaveHatActive(){
 		for (int i = 0; i < lockState.Length; i++) {
 			if (hats [i].activeSelf)
@@ -144,6 +154,7 @@ public class Shop : MonoBehaviour {
 		PlayerPrefs.SetInt ("SaveHatActive", 1);
 	}
 
+	//读取当前帽子的显示和隐藏状态
 	void ReadHatActive(){
 		if (PlayerPrefs.GetInt ("SaveHatActive", 0) == 1) {
 			for (int i = 0; i < lockState.Length; i++) {
@@ -158,6 +169,10 @@ public class Shop : MonoBehaviour {
 			hatAnim.SetTrigger("ChangeHat");
 			animator.SetTrigger("ChangeHat");
 		}
+	}
+
+	public void GoHome(){
+		MySceneManager.LoadScene ("SampleScene");
 	}
 
 }

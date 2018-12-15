@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour {
 	[SerializeField]
@@ -32,5 +33,9 @@ public class Menu : MonoBehaviour {
 				});
 			}
 		}
+	}
+
+	public void OnClothBtn(){
+		MySceneManager.LoadScene ("Shop");
 	}
 }
