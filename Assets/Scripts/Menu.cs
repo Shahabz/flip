@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 public class Menu : MonoBehaviour {
 	[SerializeField]
 	Transform moveBtn;
+	[SerializeField]
+	GameObject shop;
 	bool moveFinish = true;
 
 	static Menu instance;
@@ -38,5 +40,9 @@ public class Menu : MonoBehaviour {
 
 	public void OnClothBtn(){
 		MySceneManager.LoadScene ("Shop");
+	}
+
+	public void OnShopBtn(){
+		shop.SetActive (true);
 	}
 }
