@@ -35,6 +35,7 @@ public class Map : MonoBehaviour {
 		map.SetActive (true);
 		UpdateLock ();
 		UpdatePointer ();
+		Menu.Instance.OnMoveBtn ();
 	}
 
 	public void ExitMap(){

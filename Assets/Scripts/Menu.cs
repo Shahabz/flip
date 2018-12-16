@@ -8,14 +8,15 @@ public class Menu : MonoBehaviour {
 	[SerializeField]
 	Transform moveBtn;
 	bool moveFinish = true;
-	// Use this for initialization
-	void Start () {
-		
+
+	static Menu instance;
+	public static Menu Instance
+	{
+		get { return instance; }
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+	private void Awake()
+	{
+		instance = this;
 	}
 
 	public void OnMoveBtn(){

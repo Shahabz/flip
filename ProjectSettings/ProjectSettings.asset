@@ -756,9 +756,9 @@ PlayerSettings:
     UNet: 1
   facebookSdkVersion: 7.9.4
   apiCompatibilityLevel: 2
-  cloudProjectId: 20a546c5-c2c3-441a-83b4-b86be486fc77
+  cloudProjectId: 1a0e61eb-e159-4300-9dea-bbe1e42a1d60
   projectName: Flip2018
-  organizationId: tz_gyt
+  organizationId: test_tz
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
   disableOldInputManagerSupport: 0
