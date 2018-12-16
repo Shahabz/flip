@@ -9,6 +9,8 @@ public class Menu : MonoBehaviour {
 	Transform moveBtn;
 	[SerializeField]
 	GameObject shop;
+	[SerializeField]
+	GameObject setting;
 	bool moveFinish = true;
 
 	static Menu instance;
@@ -44,5 +46,9 @@ public class Menu : MonoBehaviour {
 
 	public void OnShopBtn(){
 		shop.SetActive (true);
+	}
+
+	public void OnSettingBtn(){
+		setting.SetActive (true);
 	}
 }

@@ -15,7 +15,7 @@ namespace UnityEngine.Purchasing
         {
             Purchase,
             Restore
-        }
+        }			
 
         [System.Serializable]
         public class OnPurchaseCompletedEvent : UnityEvent<Product>
@@ -153,6 +153,17 @@ namespace UnityEngine.Purchasing
             }
         }
 
+		void IRestore(PurchaseEventArgs e){
+			if (string.Equals (e.purchasedProduct.definition.id, "flippy_noads", System.StringComparison.Ordinal)) {								
+				PlayerPrefs.SetInt ("no_ads", 1);
+				PlayerPrefs.SetInt ("streetman", 1);
+			}
+			if (string.Equals (e.purchasedProduct.definition.id, "flippy_bundle", System.StringComparison.Ordinal)) {
+				PlayerPrefs.SetInt("no_ads", 1);
+			}
+
+		}
+
         void OnTransactionsRestored(bool success)
         {
             Debug.Log("Transactions restored: " + success);
@@ -167,6 +178,8 @@ namespace UnityEngine.Purchasing
                 e.purchasedProduct.definition.id));
 
             onPurchaseComplete.Invoke(e.purchasedProduct);
+
+			IRestore (e);
 
             return (consumePurchase) ? PurchaseProcessingResult.Complete : PurchaseProcessingResult.Pending;
         }
