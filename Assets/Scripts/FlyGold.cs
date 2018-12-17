@@ -41,4 +41,14 @@ public class FlyGold : MonoBehaviour {
 			DestroyGold (go);
 		}
 	}
+
+	public void GenerateGoldNoColl(int number,Vector3 goldPos){
+		for (int i = 0; i < number; i++) {
+			GameObject go = Instantiate (gold, goldPos + new Vector3 (Random.Range (0f, 1f), Random.Range (0f, 1f), Random.Range (0f, 1f)),
+				Quaternion.Euler (new Vector3 (Random.Range (0f, 360f), Random.Range (0f, 360f), Random.Range (0f, 360f))),transform);
+			go.GetComponent<Rigidbody> ().AddExplosionForce (500, goldPos, 10);
+			go.GetComponent<Collider> ().enabled = false;
+			DestroyGold (go);
+		}
+	}
 }

@@ -74,7 +74,16 @@ public class PlayerController : MonoBehaviour {
 	Radar radarScript;
 
     //分数字典
-    Dictionary<string, int> scoreDic;
+	Dictionary<string, float> scoreDic;
+
+	//记录旋转的度数
+	int eulurX = 0;
+	int targetEulur = 150;
+
+	[HideInInspector]
+	public GameObject tempText;
+	[HideInInspector]
+	public string tempTextStr;
 
     //0:待机状态
     //1:蓄力状态
@@ -117,7 +126,7 @@ public class PlayerController : MonoBehaviour {
 		radarScript = radar.GetComponent<Radar>();		      
 
         rings = new List<string>();
-        scoreDic = new Dictionary<string, int>();	
+		scoreDic = new Dictionary<string, float>();	
 		cityOffset = new Vector3 ();
 		perfectWord = new string[]{ "GREAT", "GOOD", "PERFECT", "PRETTY" };
 
@@ -256,11 +265,13 @@ public class PlayerController : MonoBehaviour {
 
 				//松开P停止蓄力，接触角色限制，改变重力，往头朝向发射，旋转一圈，进入跳跃状态，1秒后恢复碰撞，开始跳跃动画，停止旋转，摄像机扩大视野范围，然后缩小视野范围，取消警告
 				if (Input.GetKeyUp (KeyCode.P)) {
+					eulurX = 0;
+					targetEulur = 150;
 					// Debug.Log(transform.eulerAngles.x - 360);
 					rig.constraints = RigidbodyConstraints.None;
 					Physics.gravity = new Vector3 (0, gravity, 0);
 					rig.AddForce (transform.up * force, ForceMode.Force);
-					transform.DOLocalRotate (new Vector3 (-transform.eulerAngles.x, 0, 0), 1.5f, RotateMode.LocalAxisAdd);
+					//transform.DOLocalRotate (new Vector3 (-transform.eulerAngles.x, 0, 0), 1.5f, RotateMode.LocalAxisAdd);
 
 					GameState = 2;
 					Invoke ("ReColl", 1);
@@ -280,9 +291,24 @@ public class PlayerController : MonoBehaviour {
 
 			}
         //跳跃状态
-        else if (GameState == 2) {
-           
+        else if (GameState == 2) {	
+				if (exitHole) {
+					transform.Rotate (new Vector3 (-2, 0, 0));
+					eulurX += 2;
 
+					if (Input.GetKey (KeyCode.P)) {
+						transform.Rotate (new Vector3 (-8, 0, 0));
+						eulurX += 8;
+					}
+					if (eulurX >= targetEulur) {
+						FlyGold.Instance.GenerateGoldNoColl (20, transform.position);
+						if (tempText) {
+							Destroy (tempText);
+						}
+						TipPop.GenerateTipStay ("$99", 0.5f, Color.yellow);
+						targetEulur += 360;
+					}
+				}
 			}
         //死亡状态
         else if (GameState == 3) {
@@ -355,6 +381,13 @@ public class PlayerController : MonoBehaviour {
 			//显示关卡UI
 			HideGameUI (false);
 			HideMoneyUI (false);
+
+			if (tempText) {
+				TipPop.GenerateTip ("X5", 0.5f,Color.yellow);
+				Destroy (tempText,0.5f);
+				Gold.Instance.GetGold ((int)(99*5));
+				Gold.Instance.UpdateGold ();
+			}
 		}
 
 		//如果是跳跃状态
@@ -363,15 +396,25 @@ public class PlayerController : MonoBehaviour {
 			//如果碰到了一般建筑
             if (coll.collider.tag == "Untagged")
             {
-				//获得当前碰撞的点
-				currentColl = coll.contacts [0].point;
-				//检查射线下是否有环
-                CheckRingByRay();
-				//等待一段时间根据环生成分数，生成新的环
-                Invoke("ScoreGenerate", 0.05f);
-				Invoke("GenerateNewRing", 0.1f);
-                //一段时间后锁定主角
-				rig.constraints = RigidbodyConstraints.FreezeAll;
+				float playerEulerX = transform.eulerAngles.x;
+				if ((playerEulerX > 325 && playerEulerX < 360) || (playerEulerX > 0 && playerEulerX < 50)) {
+					//获得当前碰撞的点
+					currentColl = coll.contacts [0].point;
+					//检查射线下是否有环
+					CheckRingByRay();
+					//等待一段时间根据环生成分数，生成新的环
+					Invoke("ScoreGenerate", 0.05f);
+					Invoke("GenerateNewRing", 0.1f);
+					//一段时间后锁定主角
+					rig.constraints = RigidbodyConstraints.FreezeAll;
+
+
+				} else {
+					GameOverByBoxglove (currentColl);
+					TipPop.GenerateTip ("MISS", 0.5f);	
+					//GameOverByBoxglove (transform.position + new Vector3 (0, -5, 0));
+				}
+
             }
 
         }
@@ -390,7 +433,12 @@ public class PlayerController : MonoBehaviour {
 			transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.LocalAxisAdd);
 			Invoke("ReGame",3);
 			PlayerPrefs.SetInt ("CarHit", PlayerPrefs.GetInt ("CarHit", 0) + 1);
-			daily.SetActive (true);
+
+			if (tempText) {
+				Destroy (tempText);
+			}
+
+			Invoke("ShowDaily",3);
 		}
 
     }
@@ -429,10 +477,14 @@ public class PlayerController : MonoBehaviour {
 
 		PlayerPrefs.SetInt ("GloveHit", PlayerPrefs.GetInt ("GloveHit", 0) + 1);
 
+		if (tempText) {
+			Destroy (tempText);
+		}
+
 		Invoke("ShowDaily",3);
 	}
 
-	void ShowDaily(){
+	void ShowDaily(){		
 		daily.SetActive (true);
 	}
 
@@ -470,6 +522,7 @@ public class PlayerController : MonoBehaviour {
 	[HideInInspector]
 	//记录进入黑洞后的玩家位置
 	public Vector3 transformPre = Vector3.zero;
+	bool exitHole = false;
 	void OnTriggerExit(Collider other)
 	{
 		//如果离开了黑洞
@@ -479,6 +532,8 @@ public class PlayerController : MonoBehaviour {
 			foreach (GameObject go in inholes) {
 				go.layer = 0;
 			}
+
+			exitHole = true;
 
 			//删除存在的黑洞
 			if (firstHole) {
@@ -571,13 +626,18 @@ public class PlayerController : MonoBehaviour {
 			//如果没有踩中环,弹出MISS并拳头打飞
 			string ringname = CheckRing ();
 			if (ringname == "normal" && GameState != 0) {				
-				GameOverByBoxglove (currentColl);
-				TipPop.GenerateTip ("MISS", 0.5f);					
+				GameState = 0;
+				rings.Clear ();
+				if (tempText) {
+					TipPop.GenerateTip ("X1", 0.5f,Color.yellow);
+					Destroy (tempText,0.5f);
+					Gold.Instance.GetGold (99);
+					Gold.Instance.UpdateGold ();
+				}
 				return;		
 			} else {
 				//踩中环的时候状态变为待机状态,生成对应的分数，删除踩中的环
 				GameState = 0;
-				TipPop.GenerateTip ("+" + scoreDic [ringname], 0.5f);
 
 				Transform ringTrans = Instantiate (currentRing [ringname + "(Clone)"].gameObject).transform;
 				ringTrans.DOScale (ringTrans.localScale * 3, 0.5f);
@@ -588,6 +648,13 @@ public class PlayerController : MonoBehaviour {
 				});
 
 				rings.Clear ();
+
+				if (tempText) {
+					TipPop.GenerateTip ("X"+scoreDic [ringname], 0.5f,Color.yellow);
+					Destroy (tempText,0.5f);
+					Gold.Instance.GetGold ((int)(99*scoreDic [ringname]));
+					Gold.Instance.UpdateGold ();
+				}
 			}
 		}
     }
@@ -642,11 +709,11 @@ public class PlayerController : MonoBehaviour {
     }
 		
 
-    //初始化环分数
+    //初始化环倍数
     void InitScoreDic(){
-        scoreDic.Add("ring1", 300);
-        scoreDic.Add("ring2", 200);
-        scoreDic.Add("ring3", 100);
+        scoreDic.Add("ring1", 2);
+        scoreDic.Add("ring2", 1.5f);
+        scoreDic.Add("ring3", 1.2f);
         scoreDic.Add("normal", 1);
     }
 

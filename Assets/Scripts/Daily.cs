@@ -24,6 +24,10 @@ public class Daily : MonoBehaviour {
 		UpdateMission ();
 		CheckProgress ();
 		content.localPosition = new Vector3 (0, 2, 0);
+
+		if (!missionChange) {
+			OnBackBtn ();
+		}
 	}
 	
 	public void OnBackBtn(){
@@ -51,9 +55,10 @@ public class Daily : MonoBehaviour {
 		}
 	}
 
-
+	bool missionChange = false;
+	string[] missionChangeStr = new string[4];
 	void UpdateMission(){	
-	
+		missionChange = false;
 
 		for (int i = 1; i < 4; i++) {
 			
@@ -70,7 +75,11 @@ public class Daily : MonoBehaviour {
 				}
 
 				go.Find ("content").GetComponent<Text> ().text = Mission_name;
+				if (missionChangeStr [i] != (PlayerPrefs.GetInt (missionProgress [Mission_name], 0) + "/" + 10 * i)) {					
+					missionChange = true;
+				}
 				go.Find ("progress").GetComponent<Text> ().text = PlayerPrefs.GetInt (missionProgress[Mission_name], 0) + "/" + 10 * i;
+				missionChangeStr [i] = PlayerPrefs.GetInt (missionProgress [Mission_name], 0) + "/" + 10 * i;
 				go.Find ("diamond").GetComponent<Text> ().text = (10 * i).ToString ();				
 			}
 		}
@@ -93,7 +102,11 @@ public class Daily : MonoBehaviour {
 			}
 
 			go.Find ("content").GetComponent<Text> ().text = Mission_name;
+			if (missionChangeStr [3] != (PlayerPrefs.GetInt (missionProgress[Mission_name], 0) + "/" + 30).ToString()) {
+				missionChange = true;
+			}
 			go.Find ("progress").GetComponent<Text> ().text = PlayerPrefs.GetInt (missionProgress[Mission_name], 0) + "/" + 30;
+			missionChangeStr [3] = PlayerPrefs.GetInt (missionProgress [Mission_name], 0) + "/" + 30;
 			go.Find ("diamond").GetComponent<Text> ().text = "50";
 		}
 	}

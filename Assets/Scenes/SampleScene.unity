@@ -10995,6 +10995,11 @@ Prefab:
       propertyPath: daily
       value: 
       objectReference: {fileID: 1503413547}
+    - target: {fileID: 114736907345369102, guid: 3263dd112e09d45aa8214c3a13dfb0a2,
+        type: 2}
+      propertyPath: force
+      value: 1250
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114984541185668606, guid: 3263dd112e09d45aa8214c3a13dfb0a2, type: 2}
   m_SourcePrefab: {fileID: 100100000, guid: 3263dd112e09d45aa8214c3a13dfb0a2, type: 2}
