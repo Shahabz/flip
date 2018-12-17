@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class OfflineReward : MonoBehaviour {
 
 	public GameObject turnTable;
+	public GameObject offlineGO;
+	public GameObject daily;
+	public Text offlineGold;
 
 	DateTime currentDate;
 	DateTime oldDate;
@@ -16,6 +20,7 @@ public class OfflineReward : MonoBehaviour {
 
 	void Start(){
 		Invoke ("NewDayTurn", 1);
+		AutoPopOffline ();
 	}
 
 	//退出游戏获得存储离线时间
@@ -30,21 +35,42 @@ public class OfflineReward : MonoBehaviour {
 		if (isPause) {
 			PlayerPrefs.SetString("offlineTime", System.DateTime.Now.ToBinary().ToString());
 		} else {
-			GetReward ();
+			//GetReward ();
 		}
 	}
 
+	bool falseDaily = false;
+	int offlineGoldInt = 0;
 	//获得离线奖励或者弹出离线奖励窗口
-	void GetReward(){
-		
+	public void GetOfflineReward(){		
+		Gold.Instance.GetGold (offlineGoldInt);
+		Gold.Instance.UpdateGold ();
+		if (falseDaily) {
+			PlayerPrefs.SetInt ("OnMissionBtn", 1);
+			daily.SetActive (true);
+		}
+		offlineGO.SetActive (false);
+	}
+
+	void AutoPopOffline(){
+		int offlineTime = OfflineTime ();
+		if (offlineTime >= 1) {
+			if (daily.activeSelf) {
+				falseDaily = true;
+				daily.SetActive (false);
+			}
+			offlineGO.SetActive (true);
+			offlineGoldInt = (int)(Mathf.Pow (1.05f, PlayerPrefs.GetInt ("offlineLvInt", 1) - 1) * 15) * offlineTime;
+			offlineGold.text = "$" + offlineGoldInt;
+		}
 	}
 
 	//获得离线的分钟数
-	int OfflineTime(){
+	int OfflineTime(){				
 		//Store the current time when it starts
 		currentDate = System.DateTime.Now;
 		//Grab the old time from the player prefs as a long
-		long temp = Convert.ToInt64(PlayerPrefs.GetString("sysString",currentDate.ToBinary().ToString()));
+		long temp = Convert.ToInt64(PlayerPrefs.GetString("offlineTime",currentDate.ToBinary().ToString()));
 		//Convert the old time from binary to a DataTime variable
 		DateTime oldDate = DateTime.FromBinary(temp);
 		//Use the Subtract method and store the result as a timespan variable

@@ -25,9 +25,10 @@ public class Daily : MonoBehaviour {
 		CheckProgress ();
 		content.localPosition = new Vector3 (0, 2, 0);
 
-		if (!missionChange) {
+		if (!missionChange&&PlayerPrefs.GetInt ("OnMissionBtn", 1)==0) {
 			OnBackBtn ();
 		}
+		PlayerPrefs.SetInt ("OnMissionBtn", 0);
 	}
 	
 	public void OnBackBtn(){

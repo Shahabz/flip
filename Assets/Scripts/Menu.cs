@@ -64,6 +64,7 @@ public class Menu : MonoBehaviour {
 	}
 
 	public void OnMissionBtn(){
+		PlayerPrefs.SetInt ("OnMissionBtn", 1);
 		mission.SetActive (true);
 		turnBtn.SetActive (false);
 	}

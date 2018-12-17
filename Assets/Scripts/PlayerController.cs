@@ -79,6 +79,8 @@ public class PlayerController : MonoBehaviour {
 	//记录旋转的度数
 	int eulurX = 0;
 	int targetEulur = 150;
+	//旋转速度
+	int eulurSpeed = 8;
 
 	[HideInInspector]
 	public GameObject tempText;
@@ -250,6 +252,8 @@ public class PlayerController : MonoBehaviour {
 					bodyColl.enabled = false;
 					animator.SetBool ("Storage", true);
 					animator.SetBool ("Idle", false);
+					int speedLevel = PlayerPrefs.GetInt ("speedLevel", 1);
+					eulurSpeed = 7 + speedLevel;
 				}
 
 			}
@@ -297,15 +301,16 @@ public class PlayerController : MonoBehaviour {
 					eulurX += 2;
 
 					if (Input.GetKey (KeyCode.P)) {
-						transform.Rotate (new Vector3 (-8, 0, 0));
-						eulurX += 8;
+						transform.Rotate (new Vector3 (-eulurSpeed, 0, 0));
+						eulurX += eulurSpeed;
 					}
 					if (eulurX >= targetEulur) {
 						FlyGold.Instance.GenerateGoldNoColl (20, transform.position);
 						if (tempText) {
 							Destroy (tempText);
 						}
-						TipPop.GenerateTipStay ("$99", 0.5f, Color.yellow);
+						int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);
+						TipPop.GenerateTipStay ("$"+(int)(77*(Mathf.Pow(1.05f,coinLevel))), 0.5f, Color.yellow);
 						targetEulur += 360;
 					}
 				}
@@ -385,7 +390,8 @@ public class PlayerController : MonoBehaviour {
 			if (tempText) {
 				TipPop.GenerateTip ("X5", 0.5f,Color.yellow);
 				Destroy (tempText,0.5f);
-				Gold.Instance.GetGold ((int)(99*5));
+				int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);			
+				Gold.Instance.GetGold ((int)(77*(Mathf.Pow(1.05f,coinLevel))*5));
 				Gold.Instance.UpdateGold ();
 			}
 		}
@@ -631,7 +637,8 @@ public class PlayerController : MonoBehaviour {
 				if (tempText) {
 					TipPop.GenerateTip ("X1", 0.5f,Color.yellow);
 					Destroy (tempText,0.5f);
-					Gold.Instance.GetGold (99);
+					int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);			
+					Gold.Instance.GetGold ((int)(77*(Mathf.Pow(1.05f,coinLevel))));
 					Gold.Instance.UpdateGold ();
 				}
 				return;		
@@ -652,7 +659,8 @@ public class PlayerController : MonoBehaviour {
 				if (tempText) {
 					TipPop.GenerateTip ("X"+scoreDic [ringname], 0.5f,Color.yellow);
 					Destroy (tempText,0.5f);
-					Gold.Instance.GetGold ((int)(99*scoreDic [ringname]));
+					int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);			
+					Gold.Instance.GetGold ((int)((int)(77*(Mathf.Pow(1.05f,coinLevel)))*scoreDic [ringname]));
 					Gold.Instance.UpdateGold ();
 				}
 			}

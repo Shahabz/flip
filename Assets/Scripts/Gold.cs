@@ -28,7 +28,7 @@ public class Gold : MonoBehaviour {
 		PlayerPrefs.SetInt ("Gold", curGold);
 	}
 
-	//使用钻石，更新UI及存储，不够则弹出提示,返回购买状态
+	//使用金币，更新UI及存储，不够则弹出提示,返回购买状态
 	public bool UseGold(int number){
 		int curGold = PlayerPrefs.GetInt ("Gold", 0);
 		if (curGold >= number) {
