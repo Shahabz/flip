@@ -41,38 +41,39 @@ public class PlayerGuide : MonoBehaviour {
 		hold.GetComponent<Text> ().DOColor (Color.white, 1);
 	}
 
-
+	bool guideFinish = false;
 	void Update()
 	{
-
-		if (Input.GetKey (KeyCode.P)) {		
-			if (transform.eulerAngles.x < 340 && transform.eulerAngles.x > 300) {
-				stopHold.SetActive (true);
-			} else {
-				if (isRotate == false) {
-					GetPress ();
+		if (!guideFinish) {
+			if (Input.GetKey (KeyCode.P)) {		
+				if (transform.eulerAngles.x < 340 && transform.eulerAngles.x > 300) {
+					stopHold.SetActive (true);
+				} else {
+					if (isRotate == false) {
+						GetPress ();
+					}
+					transform.Rotate (new Vector3 (1, 0, 0), -1);
+					continueHold.SetActive (false);
 				}
-				transform.Rotate (new Vector3 (1, 0, 0), -1);
-				continueHold.SetActive (false);
 			}
-		}
 									
-		if (Input.GetKeyUp (KeyCode.P)) {
-			if (transform.eulerAngles.x < 340 && transform.eulerAngles.x > 300) {
-				rig.constraints = RigidbodyConstraints.None;
-				Physics.gravity = new Vector3 (0, gravity, 0);
-				rig.AddForce (transform.up * force, ForceMode.Force);
-				transform.DOLocalRotate (new Vector3 (-transform.eulerAngles.x, 0, 0), 1.5f, RotateMode.LocalAxisAdd);
-				Invoke ("ReColl", 1);
-				animator.SetBool ("Storage", false);
-				animator.SetBool ("Jump", true);
-				isRotate = false;
-				stopHold.SetActive (false);
-			} else {
-				continueHold.SetActive (true);
+			if (Input.GetKeyUp (KeyCode.P)) {
+				if (transform.eulerAngles.x < 340 && transform.eulerAngles.x > 300) {
+					rig.constraints = RigidbodyConstraints.None;
+					Physics.gravity = new Vector3 (0, gravity, 0);
+					rig.AddForce (transform.up * force, ForceMode.Force);
+					transform.DOLocalRotate (new Vector3 (-transform.eulerAngles.x, 0, 0), 1.5f, RotateMode.LocalAxisAdd);
+					Invoke ("ReColl", 1);
+					animator.SetBool ("Storage", false);
+					animator.SetBool ("Jump", true);
+					isRotate = false;
+					stopHold.SetActive (false);
+					guideFinish = true;
+				} else {
+					continueHold.SetActive (true);
+				}
 			}
-		}
-			
+		}	
 	}
 
 	void ReColl(){

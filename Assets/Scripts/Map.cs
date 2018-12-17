@@ -36,10 +36,14 @@ public class Map : MonoBehaviour {
 		UpdateLock ();
 		UpdatePointer ();
 		Menu.Instance.OnMoveBtn ();
+		Menu.Instance.turnBtn.SetActive (false);
 	}
 
 	public void ExitMap(){
 		map.SetActive (false);
+		if (PlayerPrefs.GetInt ("NewDayTurn", 0) == 1) {	
+			Menu.Instance.turnBtn.SetActive (true);
+		}
 	}
 
 	//进入地图

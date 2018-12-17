@@ -62,6 +62,9 @@ public class IAPManager : MonoBehaviour
 		
 	public void OnBackBtn(){
 		gameObject.SetActive (false);
+		if (PlayerPrefs.GetInt ("NewDayTurn", 0) == 1) {	
+			Menu.Instance.turnBtn.SetActive (false);
+		}
 	}
 
 	//看广告免费得钻石

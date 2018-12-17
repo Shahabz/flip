@@ -51,10 +51,6 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField]
 	GameObject goldBox;
 
-    //当前的目标环
-   // [HideInInspector]
-   // public Transform currentRing;
-
 	[HideInInspector]
 	public Transform holeTarget;
 	//获取环的位置
@@ -131,6 +127,7 @@ public class PlayerController : MonoBehaviour {
 		totalCityOffset = Vector3.zero;
 
 		InitScoreDic();
+		InitRingMatDic ();
 
 		floorNumber = 0;
 		isRotate = false;
@@ -522,6 +519,7 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
+	Dictionary<string,Transform> currentRing = new Dictionary<string, Transform>();
 	//通过射线检测主角下方处是否含有环，有则添加进环数组，环的碰撞取消
     void CheckRingByRay(){
 		Ray ray = new Ray(transform.position+new Vector3(0,5,0), Vector3.down);
@@ -530,24 +528,51 @@ public class PlayerController : MonoBehaviour {
             string hitName = hit.collider.name;
             if(hitName.StartsWith("ring")){
                 rings.Add(hitName);
+				if (currentRing.ContainsKey (hitName)) {
+					currentRing.Remove (hitName);
+					currentRing.Add (hitName, hit.transform);
+				} else {
+					currentRing.Add (hitName, hit.transform);
+				}
                 hit.collider.GetComponent<BoxCollider>().enabled = false;
             }
         }
     }		
 
+
     //生成分数,还需要生成文字perfect提示
     void ScoreGenerate(){	
-		//如果没有踩中环,弹出MISS并拳头打飞
-		if (CheckRing () == "normal") {				
-			GameOverByBoxglove (currentColl);
-			TipPop.GenerateTip ("MISS", 0.5f);					
-			return;		
+		if (!scoreGenerating) {
+			scoreGenerating = true;
+			Invoke ("ResetScoreGenerate", 1);
+			//如果没有踩中环,弹出MISS并拳头打飞
+			string ringname = CheckRing ();
+			if (ringname == "normal" && GameState != 0) {				
+				GameOverByBoxglove (currentColl);
+				TipPop.GenerateTip ("MISS", 0.5f);					
+				return;		
+			} else {
+				//踩中环的时候状态变为待机状态,生成对应的分数，删除踩中的环
+				GameState = 0;
+				TipPop.GenerateTip ("+" + scoreDic [ringname], 0.5f);
+
+				Transform ringTrans = Instantiate (currentRing [ringname + "(Clone)"].gameObject).transform;
+				ringTrans.DOScale (ringTrans.localScale * 3, 0.5f);
+				MeshRenderer ringMesh = ringTrans.GetComponent<MeshRenderer> ();
+				ringMesh.material = ringMarDic [ringname];
+				ringMesh.material.DOColor (Color.clear, 0.5f).OnComplete (() => {
+					Destroy (ringTrans.gameObject);
+				});
+
+				rings.Clear ();
+			}
 		}
-		//踩中环的时候状态变为待机状态,生成对应的分数，删除踩中的环
-		GameState = 0;
-		TipPop.GenerateTip("+"+scoreDic[CheckRing()], 0.5f);
-		rings.Clear();
     }
+
+	bool scoreGenerating = false;
+	void ResetScoreGenerate(){
+		scoreGenerating = false;
+	}
 
     //判断踩中的环
     string CheckRing(){
@@ -602,6 +627,17 @@ public class PlayerController : MonoBehaviour {
         scoreDic.Add("normal", 1);
     }
 
+
+	Dictionary<string,Material> ringMarDic = new Dictionary<string, Material>();
+	public Material ring1Mat;
+	public Material ring2Mat;
+	public Material ring3Mat;
+	void InitRingMatDic(){
+		ringMarDic.Add("ring1", ring1Mat);
+		ringMarDic.Add("ring2", ring2Mat);
+		ringMarDic.Add("ring3", ring3Mat);
+	}
+
 	//扫描是否有可以生成环的位置
     void RadarScan()
     {
@@ -651,6 +687,20 @@ public class PlayerController : MonoBehaviour {
 	void HideMoneyUI(bool hide){		
 		foreach (GameObject go in moneyUIs) {
 			go.SetActive (!hide);
+		}
+	}
+
+	//检查任务完成情况
+	void CheckMission(){
+		for (int i = 0; i < 5; i++) {
+			if (PlayerPrefs.GetInt ("Mission_number" + i, 0) >= 10 * i) {
+				Diamond.Instance.GetDiamond (10 * i);
+				if (i == 4) {
+					Diamond.Instance.GetDiamond (20);
+				}
+				PlayerPrefs.SetInt ("Mission" + i, 0);
+				PlayerPrefs.SetInt ("freeMission", 2);							
+			}
 		}
 	}
 }

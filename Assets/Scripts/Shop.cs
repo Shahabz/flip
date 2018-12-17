@@ -104,6 +104,7 @@ public class Shop : MonoBehaviour {
 				lockState [i] = false;
 			} else {
 				lockState [i] = true;
+				hats [i].transform.Find ("lock").gameObject.SetActive (false);
 			}
 		}
 	}
@@ -164,6 +165,12 @@ public class Shop : MonoBehaviour {
 					hats [i].SetActive (false);
 				}
 			}
+			Animator hatAnim = hats [hatIndex].GetComponent<Animator> ();
+			hatAnim.enabled = true;
+			hatAnim.SetTrigger("ChangeHat");
+			animator.SetTrigger("ChangeHat");
+		}
+		if (hatIndex == 0) {
 			Animator hatAnim = hats [hatIndex].GetComponent<Animator> ();
 			hatAnim.enabled = true;
 			hatAnim.SetTrigger("ChangeHat");
