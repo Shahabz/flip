@@ -73,9 +73,14 @@ public class OfflineReward : MonoBehaviour {
 				PlayerPrefs.SetInt ("Mission3", 1);
 				PlayerPrefs.SetInt ("Mission4", 1);
 				PlayerPrefs.SetInt ("freeMission", 0);
+				PlayerPrefs.SetInt ("CarHit",0);
+				PlayerPrefs.SetInt ("GloveHit",0);
+				PlayerPrefs.SetInt ("Roof", 0);
+				PlayerPrefs.SetInt ("Road", 0);
+				PlayerPrefs.SetInt ("CarUp", 0);
 				for (int i = 1; i < 4; i++) {
 					PlayerPrefs.SetString ("Mission_name" + i, "null");
-					PlayerPrefs.SetInt ("Mission_number" + i, 0);
+					//PlayerPrefs.SetInt ("Mission_number" + i, 0);
 				}
 			}
 		}

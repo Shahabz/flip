@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour {
 	public GameObject city;   
 	[SerializeField]
 	Transform alarm;
+	[SerializeField]
+	GameObject daily;
 	GameObject[] startsPos;
 	//游戏内的UI
 	GameObject[] gameUIs;
@@ -149,7 +151,9 @@ public class PlayerController : MonoBehaviour {
 	Transform initPos;
 	[SerializeField]
 	Transform initPrePos;
-	public void ChangeLevel(){	
+	public void ChangeLevel(){
+		SaveManager.Instance.ClearPosList ();
+		radarScript.levelPos.Clear ();	
 		SaveManager.Instance.SetVector3 ("TotalCityOffset", Vector3.zero);
 		Camera.main.transform.position += initPos.position - initPrePos.position;
 		Physics.gravity = new Vector3(0, gravity, 0);
@@ -385,6 +389,8 @@ public class PlayerController : MonoBehaviour {
 			rig.AddForce((carDirection + transform.up) * carForce, ForceMode.Force);
 			transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.LocalAxisAdd);
 			Invoke("ReGame",3);
+			PlayerPrefs.SetInt ("CarHit", PlayerPrefs.GetInt ("CarHit", 0) + 1);
+			daily.SetActive (true);
 		}
 
     }
@@ -420,6 +426,14 @@ public class PlayerController : MonoBehaviour {
 		boxGloveTrans.DOMove (transform.position+carDirection*2, 0.3f, false);
 		//取消警告
 		alarm.gameObject.SetActive (false);
+
+		PlayerPrefs.SetInt ("GloveHit", PlayerPrefs.GetInt ("GloveHit", 0) + 1);
+
+		Invoke("ShowDaily",3);
+	}
+
+	void ShowDaily(){
+		daily.SetActive (true);
 	}
 
 	//清空环
@@ -526,6 +540,15 @@ public class PlayerController : MonoBehaviour {
         RaycastHit[] hits = Physics.RaycastAll(ray);
         foreach(RaycastHit hit in hits){
             string hitName = hit.collider.name;
+			if (hitName.StartsWith ("Road")) {
+				PlayerPrefs.SetInt ("Road", PlayerPrefs.GetInt ("Road", 0)+1);
+			}
+			if (hitName.StartsWith ("Houes")||hitName.StartsWith ("Garage")||hitName.StartsWith ("Gas_Station")||hitName.StartsWith ("Food_bar")) {
+				PlayerPrefs.SetInt ("Roof", PlayerPrefs.GetInt ("Roof", 0)+1);
+			}
+			if (hitName.StartsWith ("Car")) {
+				PlayerPrefs.SetInt ("CarUp", PlayerPrefs.GetInt ("CarUp", 0)+1);
+			}
             if(hitName.StartsWith("ring")){
                 rings.Add(hitName);
 				if (currentRing.ContainsKey (hitName)) {
@@ -690,17 +713,4 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-	//检查任务完成情况
-	void CheckMission(){
-		for (int i = 0; i < 5; i++) {
-			if (PlayerPrefs.GetInt ("Mission_number" + i, 0) >= 10 * i) {
-				Diamond.Instance.GetDiamond (10 * i);
-				if (i == 4) {
-					Diamond.Instance.GetDiamond (20);
-				}
-				PlayerPrefs.SetInt ("Mission" + i, 0);
-				PlayerPrefs.SetInt ("freeMission", 2);							
-			}
-		}
-	}
 }
