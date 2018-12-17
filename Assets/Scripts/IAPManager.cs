@@ -49,7 +49,7 @@ public class IAPManager : MonoBehaviour
 			if(product.definition.id == "flippy_19.99"){
 				Diamond.Instance.GetDiamond (6600);
 			}
-				
+			MoneyManager.Instance.UpdateDiamond();
 		}
 	}
 
@@ -73,6 +73,7 @@ public class IAPManager : MonoBehaviour
 			TGSDK.ShowAd (TGSDKManager.freeDiamondId);
 			TGSDK.AdCloseCallback = (string obj) => {
 				Diamond.Instance.GetDiamond (25);
+				MoneyManager.Instance.UpdateDiamond();
 			};
 		} else {
 			TipPop.GenerateTip ("no ads", 0.5f);

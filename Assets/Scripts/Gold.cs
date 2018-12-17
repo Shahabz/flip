@@ -45,6 +45,6 @@ public class Gold : MonoBehaviour {
 	//刷新钻石信息
 	public void UpdateGold(){
 		int curGold = PlayerPrefs.GetInt ("Gold", 0);
-		gold.text = curGold.ToString();
+		gold.text = curGold.ToString ();
 	}
 }

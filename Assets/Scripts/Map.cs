@@ -95,6 +95,7 @@ public class Map : MonoBehaviour {
 			curLock [mapIndex].SetActive (false);
 			purchasePop.SetActive (false);
 			ChangeToMap (mapIndex);
+			MoneyManager.Instance.UpdateGold();
 		}
 	}
 

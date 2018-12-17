@@ -17,6 +17,8 @@ TagManager:
   - StartUI
   - GoldBox
   - money
+  - diamond
+  - gold
   layers:
   - Default
   - TransparentFX

@@ -75,6 +75,9 @@ public class OfflineReward : MonoBehaviour {
 		DateTime oldDate = DateTime.FromBinary(temp);
 		//Use the Subtract method and store the result as a timespan variable
 		TimeSpan difference = currentDate.Subtract(oldDate);
+
+		PlayerPrefs.SetString ("offlineTime", currentDate.ToBinary ().ToString ());
+
 		return difference.Minutes;
 	}
 		

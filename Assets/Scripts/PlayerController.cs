@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using Together;
 
 public class PlayerController : MonoBehaviour {
     //玩家刚体
@@ -212,6 +213,33 @@ public class PlayerController : MonoBehaviour {
 			Destroy (boxGloveTrans.gameObject);
 	}
 		
+	public GameObject ResetLevel;
+	public void OnReGameBtn(){
+		ResetLevel.SetActive (true);
+	}
+
+	public void OnReGameBackBtn(){
+		ResetLevel.SetActive (false);
+	}
+
+	public GameStart gameStartScript;
+	public void OnFreeReGameBtn(){
+		if (TGSDK.CouldShowAd (TGSDKManager.resetLevelID)) {
+			TGSDK.ShowAd (TGSDKManager.resetLevelID);
+			TGSDK.AdCloseCallback = (string obj) => {
+				gameStartScript.ChangeLevel();
+			};
+		} else {
+			TipPop.GenerateTip ("no ads", 0.5f);
+		}
+	}
+
+	public void OnDiamondBtn(){
+		if (Diamond.Instance.UseDiamond (25)) {
+			Diamond.Instance.UpdateDiamond ();
+			gameStartScript.ChangeLevel();
+		}
+	}
 
 	//检查tap后的主角角度,用于开始按钮
 	IEnumerator CheckRotation(){		

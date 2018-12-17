@@ -161,6 +161,7 @@ public class Daily : MonoBehaviour {
 			
 			}
 		}
-
+		MoneyManager.Instance.UpdateDiamond();
 	}
+
 }
