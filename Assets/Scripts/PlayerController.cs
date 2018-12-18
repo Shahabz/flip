@@ -4,6 +4,8 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
 using Together;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
     //玩家刚体
@@ -273,8 +275,8 @@ public class PlayerController : MonoBehaviour {
 			//待机状态
 			//按住P开始蓄力，进入蓄力状态，碰撞取消，播放蓄力动画
 			if (GameState == 0) {    				
-				//if (Input.GetMouseButtonDown (0)) {
-				if (Input.GetKeyDown (KeyCode.P)) {
+				if (Input.GetMouseButton (0) && !CheckGuiRaycastObjects ()) {
+				//if (Input.GetKeyDown (KeyCode.P)) {
 					GameState = 1;
 					playerColl.enabled = false;
 					bodyColl.enabled = false;
@@ -282,7 +284,7 @@ public class PlayerController : MonoBehaviour {
 					animator.SetBool ("Idle", false);
 					int speedLevel = PlayerPrefs.GetInt ("speedLevel", 1);
 					eulurSpeed = 7 + speedLevel;
-				}
+				}					
 
 			}
 			
@@ -296,7 +298,8 @@ public class PlayerController : MonoBehaviour {
 				}
 
 				//松开P停止蓄力，接触角色限制，改变重力，往头朝向发射，旋转一圈，进入跳跃状态，1秒后恢复碰撞，开始跳跃动画，停止旋转，摄像机扩大视野范围，然后缩小视野范围，取消警告
-				if (Input.GetKeyUp (KeyCode.P)) {
+				if (Input.GetMouseButtonUp (0) ) {
+				//if (Input.GetKeyUp (KeyCode.P)) {
 					eulurX = 0;
 					targetEulur = 150;
 					// Debug.Log(transform.eulerAngles.x - 360);
@@ -327,8 +330,10 @@ public class PlayerController : MonoBehaviour {
 				if (exitHole) {
 					transform.Rotate (new Vector3 (-2, 0, 0));
 					eulurX += 2;
-
-					if (Input.GetKey (KeyCode.P)) {
+					if (CheckGuiRaycastObjects ())
+						return;
+					if (Input.GetMouseButton (0) ) {
+					//if (Input.GetKey (KeyCode.P)&& !CheckGuiRaycastObjects ()) {
 						transform.Rotate (new Vector3 (-eulurSpeed, 0, 0));
 						eulurX += eulurSpeed;
 					}
@@ -816,4 +821,16 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
+	public EventSystem eventSystem;
+	public GraphicRaycaster graphicRaycaster;
+	bool CheckGuiRaycastObjects()
+	{
+		PointerEventData eventData = new PointerEventData(eventSystem);
+		eventData.pressPosition = Input.mousePosition;
+		eventData.position = Input.mousePosition;
+
+		List<RaycastResult> list = new List<RaycastResult>();
+		graphicRaycaster.Raycast(eventData, list);
+		return list.Count > 0;
+	}
 }

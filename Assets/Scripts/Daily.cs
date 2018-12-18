@@ -119,7 +119,7 @@ public class Daily : MonoBehaviour {
 		missionName.Add("Hit by the fist");
 		missionName.Add("hit by the car");
 		missionName.Add("Land on the road");
-		missionName.Add("Lond on the car");
+		missionName.Add("Land on the car");
 	}
 
 	Dictionary<string,string> missionProgress;
@@ -128,7 +128,7 @@ public class Daily : MonoBehaviour {
 		missionProgress.Add ("Hit by the fist", "GloveHit");
 		missionProgress.Add ("hit by the car", "CarHit");
 		missionProgress.Add ("Land on the road", "Road");
-		missionProgress.Add ("Lond on the car", "CarUp");
+		missionProgress.Add ("Land on the car", "CarUp");
 			
 	}
 

@@ -4,6 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class PlayerGuide : MonoBehaviour {
 	//玩家刚体
@@ -29,6 +30,10 @@ public class PlayerGuide : MonoBehaviour {
 	GameObject finish;
 	[SerializeField]
 	GameObject stopHold;
+	[SerializeField]
+	GameObject holdFlip;
+	[SerializeField]
+	GameObject stopFlip;
 
 	//初始化
 	void Start () {
@@ -41,11 +46,16 @@ public class PlayerGuide : MonoBehaviour {
 		hold.GetComponent<Text> ().DOColor (Color.white, 1);
 	}
 
+	int eulur = 0;
 	bool guideFinish = false;
 	void Update()
 	{
+
 		if (!guideFinish) {
-			if (Input.GetKey (KeyCode.P)) {		
+
+			if (CheckGuiRaycastObjects()) return;
+
+			if (Input.GetMouseButton(0)||Input.GetKey(KeyCode.P)) {		
 				if (transform.eulerAngles.x < 340 && transform.eulerAngles.x > 300) {
 					stopHold.SetActive (true);
 				} else {
@@ -53,12 +63,14 @@ public class PlayerGuide : MonoBehaviour {
 						GetPress ();
 					}
 					transform.Rotate (new Vector3 (1, 0, 0), -1);
+					eulur += 1;
 					continueHold.SetActive (false);
 				}
 			}
 									
-			if (Input.GetKeyUp (KeyCode.P)) {
+			if (Input.GetMouseButtonUp(0)||Input.GetKeyUp(KeyCode.P)) {
 				if (transform.eulerAngles.x < 340 && transform.eulerAngles.x > 300) {
+					Debug.Log (eulur);
 					rig.constraints = RigidbodyConstraints.None;
 					Physics.gravity = new Vector3 (0, gravity, 0);
 					rig.AddForce (transform.up * force, ForceMode.Force);
@@ -68,12 +80,50 @@ public class PlayerGuide : MonoBehaviour {
 					animator.SetBool ("Jump", true);
 					isRotate = false;
 					stopHold.SetActive (false);
-					guideFinish = true;
+
+					Invoke ("StartFlip", 0.2f);
 				} else {
 					continueHold.SetActive (true);
 				}
+			}							
+
+	
+			if (startFlip) {	
+				if (Input.GetMouseButtonDown (0)) {
+					Time.timeScale = 1;
+					holdFlip.SetActive (false);
+					continueHold.SetActive (false);
+				}
+				if (Input.GetMouseButton (0)) {
+					if (eulur >= 340) {
+						transform.Rotate (new Vector3 (-10, 0, 0));
+						eulur += 10;
+					} else {
+						Time.timeScale = 0;
+						holdFlip.SetActive (false);
+						stopFlip.SetActive (true);
+					}
+				} if(Input.GetMouseButtonUp(0)){
+					if (eulur >= 340) {
+						Time.timeScale = 1;
+						continueHold.SetActive (false);
+						stopFlip.SetActive (false);
+					} else {						
+						Time.timeScale = 0;
+						continueHold.SetActive (true);
+					}
+				}
 			}
+
 		}	
+	}
+		
+
+	bool startFlip = false;
+	void StartFlip(){
+		startFlip = true;
+		holdFlip.SetActive (true);
+		Time.timeScale = 0;
 	}
 
 	void ReColl(){
@@ -90,6 +140,7 @@ public class PlayerGuide : MonoBehaviour {
 			animator.SetBool("Idle", true);
 			animator.SetBool("Jump", false);
 			finish.SetActive (true);
+			guideFinish = true;
 		}
 	}
 
@@ -112,6 +163,19 @@ public class PlayerGuide : MonoBehaviour {
 			animator.SetBool ("Idle", false);
 			hold.SetActive (false);
 		}
+	}
+
+	public EventSystem eventSystem;
+	public GraphicRaycaster graphicRaycaster;
+	bool CheckGuiRaycastObjects()
+	{
+		PointerEventData eventData = new PointerEventData(eventSystem);
+		eventData.pressPosition = Input.mousePosition;
+		eventData.position = Input.mousePosition;
+
+		List<RaycastResult> list = new List<RaycastResult>();
+		graphicRaycaster.Raycast(eventData, list);
+		return list.Count > 0;
 	}
 
 }

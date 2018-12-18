@@ -19,6 +19,7 @@ TagManager:
   - money
   - diamond
   - gold
+  - TouchTarget
   layers:
   - Default
   - TransparentFX

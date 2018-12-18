@@ -46,6 +46,8 @@ public class Shop : MonoBehaviour {
 		transform.eulerAngles += new Vector3 (0, hatIndex * 60, 0);
 
 		ReadHatActive ();
+
+		StartCoroutine (CheckFingerMove ());
 	}
 	
 	// Update is called once per frame
@@ -58,22 +60,41 @@ public class Shop : MonoBehaviour {
 		}
 	}
 
+	IEnumerator CheckFingerMove(){
+		while (true) {
+			if (Input.touchCount > 0 && Input.GetTouch (0).phase == TouchPhase.Moved) {
+				Vector2 touchDelPos = Input.GetTouch(0).deltaPosition;
+				if (touchDelPos.x > 10)  
+				{
+					RotateCy (true);
+					yield return new WaitForSeconds (0.3f);
+				}
+				else if(touchDelPos.x < -10)
+				{
+					RotateCy (false);
+					yield return new WaitForSeconds (0.3f);
+				}
+			}
+			yield return null;
+		}
+	}
+
 	//切换帽子选择，true为往右看，false往左看
 	void RotateCy(bool dir){		
 		float yAngle = transform.eulerAngles.y;
 		if ((rotateY >= 73f && dir == false) || (rotateY <= 14f + ((hats.Length - 2) * 60) && dir == true)) {
 			if (dir) {
-				if (hatIndex <= 12 && hatIndex >= 3) {
+				if (hatIndex <= 13 && hatIndex >= 3) {
 					hats [hatIndex - 3].SetActive (false);
 				}
-				if (hatIndex >= 1 && hatIndex <= 10) {
+				if (hatIndex >= 1 && hatIndex <= 11) {
 					hats [hatIndex + 3].SetActive (true);
 				}
 			} else {
-				if (hatIndex <= 12 && hatIndex >= 3) {
+				if (hatIndex <= 13 && hatIndex >= 3) {
 					hats [hatIndex - 3].SetActive (true);
 				}
-				if (hatIndex >= 1 && hatIndex <= 10) {
+				if (hatIndex >= 1 && hatIndex <= 11) {
 					hats [hatIndex + 3].SetActive (false);
 				}
 			}
@@ -128,6 +149,8 @@ public class Shop : MonoBehaviour {
 			PlayerPrefs.SetInt (hats [hatIndex].name, 1);
 			skinRender [hatIndex].material = hatMats[hatIndex];
 			hats [hatIndex].transform.Find ("lock").gameObject.SetActive (false);
+			chooseBtn.SetActive (true);
+			buyBtn.SetActive (false);
 			OnChooseBtn ();
 		}
 	}
@@ -140,7 +163,7 @@ public class Shop : MonoBehaviour {
 	}
 
 	void initHatPrice(){
-		price = new int[] {0,50,100,100,100,100,100,100,250,250,250,500,500,1000};
+		price = new int[] {0,50,100,100,100,100,100,100,250,250,250,500,500,500,1000};
 	}
 
 	//保存当前帽子的显示和隐藏状态
