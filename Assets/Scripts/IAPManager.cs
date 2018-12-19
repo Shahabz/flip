@@ -34,7 +34,7 @@ public class IAPManager : MonoBehaviour
 			if(product.definition.id == "flippy_bundle"){
 				Diamond.Instance.GetDiamond (900);
 				PlayerPrefs.SetInt("no_ads", 1);
-				PlayerPrefs.SetInt ("streetman", 1);
+				PlayerPrefs.SetInt ("christmas", 1);
 				PlayerPrefs.SetInt ("flippy_bundle", 1);
 			}
 			if(product.definition.id == "flippy_0.99"){

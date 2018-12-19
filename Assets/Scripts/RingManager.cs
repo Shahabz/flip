@@ -25,8 +25,10 @@ public class RingManager : MonoBehaviour {
         int length = trans.Count;
         while (length > 0)
         {           
-            trans[length - 1].DOLocalMoveY(trans[length - 1].localPosition.y - 20, time, false);
-            length--;
+			if (trans [length - 1]) {
+				trans [length - 1].DOLocalMoveY (trans [length - 1].localPosition.y - 20, time, false);
+				length--;
+			}
             yield return new WaitForSeconds(time - 0.05f);
         }
     }

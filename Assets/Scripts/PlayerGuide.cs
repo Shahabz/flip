@@ -54,39 +54,39 @@ public class PlayerGuide : MonoBehaviour {
 		if (!guideFinish) {
 
 			if (CheckGuiRaycastObjects()) return;
-
-			if (Input.GetMouseButton(0)||Input.GetKey(KeyCode.P)) {		
-				if (transform.eulerAngles.x < 340 && transform.eulerAngles.x > 300) {
-					stopHold.SetActive (true);
-				} else {
-					if (isRotate == false) {
-						GetPress ();
+			if (!startFlip) {
+				if (Input.GetMouseButton (0) || Input.GetKey (KeyCode.P)) {		
+					if (eulur > 20) {
+						stopHold.SetActive (true);
+					} else {
+						if (isRotate == false) {
+							GetPress ();
+						}
+						transform.Rotate (new Vector3 (1, 0, 0), -1);
+						eulur += 1;
+						continueHold.SetActive (false);
 					}
-					transform.Rotate (new Vector3 (1, 0, 0), -1);
-					eulur += 1;
-					continueHold.SetActive (false);
 				}
-			}
 									
-			if (Input.GetMouseButtonUp(0)||Input.GetKeyUp(KeyCode.P)) {
-				if (transform.eulerAngles.x < 340 && transform.eulerAngles.x > 300) {
-					Debug.Log (eulur);
-					rig.constraints = RigidbodyConstraints.None;
-					Physics.gravity = new Vector3 (0, gravity, 0);
-					rig.AddForce (transform.up * force, ForceMode.Force);
-					transform.DOLocalRotate (new Vector3 (-transform.eulerAngles.x, 0, 0), 1.5f, RotateMode.LocalAxisAdd);
-					Invoke ("ReColl", 1);
-					animator.SetBool ("Storage", false);
-					animator.SetBool ("Jump", true);
-					isRotate = false;
-					stopHold.SetActive (false);
+				if (Input.GetMouseButtonUp (0) || Input.GetKeyUp (KeyCode.P)) {
+					//if (transform.eulerAngles.x < 340 && transform.eulerAngles.x > 300) {
+					if (eulur > 20) {					
+						rig.constraints = RigidbodyConstraints.None;
+						Physics.gravity = new Vector3 (0, gravity, 0);
+						rig.AddForce (transform.up * force, ForceMode.Force);
+						transform.DOLocalRotate (new Vector3 (-transform.eulerAngles.x, 0, 0), 1.5f, RotateMode.LocalAxisAdd);
+						Invoke ("ReColl", 1);
+						animator.SetBool ("Storage", false);
+						animator.SetBool ("Jump", true);
+						isRotate = false;
+						stopHold.SetActive (false);
 
-					Invoke ("StartFlip", 0.2f);
-				} else {
-					continueHold.SetActive (true);
-				}
-			}							
-
+						Invoke ("StartFlip", 0.2f);
+					} else {
+						continueHold.SetActive (true);
+					}
+				}							
+			}
 	
 			if (startFlip) {	
 				if (Input.GetMouseButtonDown (0)) {
@@ -95,16 +95,16 @@ public class PlayerGuide : MonoBehaviour {
 					continueHold.SetActive (false);
 				}
 				if (Input.GetMouseButton (0)) {
-					if (eulur >= 340) {
+					if (eulur <= 300) {
 						transform.Rotate (new Vector3 (-10, 0, 0));
 						eulur += 10;
 					} else {
 						Time.timeScale = 0;
-						holdFlip.SetActive (false);
+						//holdFlip.SetActive (false);
 						stopFlip.SetActive (true);
 					}
 				} if(Input.GetMouseButtonUp(0)){
-					if (eulur >= 340) {
+					if (eulur >= 300) {
 						Time.timeScale = 1;
 						continueHold.SetActive (false);
 						stopFlip.SetActive (false);

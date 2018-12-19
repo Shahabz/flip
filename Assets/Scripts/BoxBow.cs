@@ -15,10 +15,13 @@ public class BoxBow : MonoBehaviour {
 				transform.DOScale(new Vector3(1.5f,0.6f,0.5f),0.15f).OnComplete(()=>{
 					Destroy(gameObject);
 					FlyGold.Instance.GenerateGold(20,transform.position);
+					PlayerController.Instance.ShowDoubleD(0.2f);
 				});
 			});
 		//});
 	}
+
+
 
 	void OnTriggerEnter(Collider coll){
 		if (coll.name == "playerRagdoll") {

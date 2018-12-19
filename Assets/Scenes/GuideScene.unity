@@ -528,7 +528,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 406080044}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.17557, y: 0.5, z: 0}
+  m_LocalPosition: {x: -1.29557, y: 0.5, z: 0}
   m_LocalScale: {x: 0.47155893, y: 1, z: 2.190295}
   m_Children: []
   m_Father: {fileID: 168639290}
@@ -613,7 +613,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 539662986}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.5144, y: 0.5, z: 0}
+  m_LocalPosition: {x: -3.6344, y: 0.5, z: 0}
   m_LocalScale: {x: 0.4743572, y: 1, z: 2.190295}
   m_Children: []
   m_Father: {fileID: 168639290}
@@ -877,7 +877,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4761451620726442, guid: 3263dd112e09d45aa8214c3a13dfb0a2, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -2.61
+      value: -4.85
       objectReference: {fileID: 0}
     - target: {fileID: 4761451620726442, guid: 3263dd112e09d45aa8214c3a13dfb0a2, type: 2}
       propertyPath: m_LocalPosition.y
@@ -1308,6 +1308,7 @@ GameObject:
   - component: {fileID: 1296849308}
   - component: {fileID: 1296849307}
   - component: {fileID: 1296849306}
+  - component: {fileID: 1296849309}
   m_Layer: 5
   m_Name: Home
   m_TagString: GameUI
@@ -1420,6 +1421,17 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1296849304}
   m_CullTransparentMesh: 0
+--- !u!114 &1296849309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1296849304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9dca828a36bd4b88bec433724e0f716, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1328774307
 GameObject:
   m_ObjectHideFlags: 0
@@ -1811,7 +1823,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bodyColl: {fileID: 1551407212}
-  force: 1000
+  force: 1250
   gravity: -40
   hold: {fileID: 589825865}
   continueHold: {fileID: 1239550374}
@@ -2022,7 +2034,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2008726664}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.313, y: 0.78, z: 0}
+  m_LocalPosition: {x: -2.433, y: 0.78, z: 0}
   m_LocalScale: {x: 0.73829937, y: 1.5594, z: 2.190294}
   m_Children: []
   m_Father: {fileID: 168639290}

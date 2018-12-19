@@ -108,7 +108,7 @@ public class Radar : MonoBehaviour {
 				saveManager.SaveLevelPos (levelPos);
 
 				//透视黑洞
-				Perspective.Instance.StartCoroutine (Perspective.Instance.CheckObstacle (holeTrans.gameObject));
+				//Perspective.Instance.StartCoroutine (Perspective.Instance.CheckObstacle (holeTrans.gameObject));
 
 				//将黑洞传递给玩家控制脚本
 				PlayerController.Instance.holeTarget = holeTrans;
@@ -142,7 +142,7 @@ public class Radar : MonoBehaviour {
 				levelPos.Add (ringPos-city.position);
 				saveManager.SaveLevelPos (levelPos);
 				//透视环
-				Perspective.Instance.StartCoroutine (Perspective.Instance.CheckObstacle (ringTrans.gameObject));
+				//Perspective.Instance.StartCoroutine (Perspective.Instance.CheckObstacle (ringTrans.gameObject));
 
 				Level.Instance.UpdateSlider (jumpCount*1.0f/levelJumpCount);
 

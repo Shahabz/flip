@@ -39,6 +39,7 @@ GameObject:
   - component: {fileID: 222770553922800950}
   - component: {fileID: 114420056384821818}
   - component: {fileID: 114003633474691158}
+  - component: {fileID: 114496824534770232}
   m_Layer: 5
   m_Name: freeMission
   m_TagString: Untagged
@@ -147,6 +148,17 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: +
+--- !u!114 &114496824534770232
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1634324571888760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9dca828a36bd4b88bec433724e0f716, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!222 &222087058552165034
 CanvasRenderer:
   m_ObjectHideFlags: 1

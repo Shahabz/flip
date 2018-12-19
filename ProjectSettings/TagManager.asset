@@ -20,6 +20,7 @@ TagManager:
   - diamond
   - gold
   - TouchTarget
+  - skill
   layers:
   - Default
   - TransparentFX

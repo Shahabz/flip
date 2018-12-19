@@ -20,7 +20,7 @@ public class OfflineReward : MonoBehaviour {
 
 	void Start(){
 		Invoke ("NewDayTurn", 1);
-		AutoPopOffline ();
+		//AutoPopOffline ();
 	}
 
 	//退出游戏获得存储离线时间
@@ -36,6 +36,8 @@ public class OfflineReward : MonoBehaviour {
 			PlayerPrefs.SetString("offlineTime", System.DateTime.Now.ToBinary().ToString());
 		} else {
 			//GetReward ();
+			//Invoke("AutoPopOffline",0.1f);
+			AutoPopOffline();
 		}
 	}
 
@@ -54,7 +56,7 @@ public class OfflineReward : MonoBehaviour {
 
 	void AutoPopOffline(){
 		int offlineTime = OfflineTime ();
-		if (offlineTime >= 1) {
+		if (offlineTime >= 10) {
 			if (daily.activeSelf) {
 				falseDaily = true;
 				daily.SetActive (false);
@@ -76,7 +78,7 @@ public class OfflineReward : MonoBehaviour {
 		//Use the Subtract method and store the result as a timespan variable
 		TimeSpan difference = currentDate.Subtract(oldDate);
 
-		PlayerPrefs.SetString ("offlineTime", currentDate.ToBinary ().ToString ());
+		//PlayerPrefs.SetString ("offlineTime", currentDate.ToBinary ().ToString ());
 
 		return difference.Minutes;
 	}

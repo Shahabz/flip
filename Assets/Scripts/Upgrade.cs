@@ -22,32 +22,39 @@ public class Upgrade : MonoBehaviour {
 	public Transform coinTrans;
 	public Transform offlineTrans;
 
+	public Transform skillTrans;
 
-	public void OnSpeedBtn(){
-		if (Gold.Instance.UseGold (speedPriceInt)) {
-			UpdateGold ();
-			speedLvInt++;
-			speedLevel.text = speedLvInt.ToString ();
-			PlayerPrefs.SetInt ("speedLevel", speedLvInt);
-			speedPriceInt = (int)(speedPriceInt * 1.05f);
-			speedPrice.text = speedPriceInt.ToString ();
-			PlayerPrefs.SetInt ("speedPrice", speedPriceInt);
-			speedTrans.DOScale (1.1f, 0.15f).OnComplete (() => {
-				speedTrans.DOScale (1f, 0.15f);
-			});
-		} else {
-			speedTrans.DOShakePosition (0.15f, 1, 10, 90, false, true);
-		}
+	void Start(){
+		UpdateText ();
 	}
+
+//	public void OnSpeedBtn(){
+//		if (Gold.Instance.UseGold (speedPriceInt)) {
+//			UpdateGold ();
+//			UpdateText ();
+//			speedLvInt++;
+//			speedLevel.text = speedLvInt.ToString ();
+//			PlayerPrefs.SetInt ("speedLevel", speedLvInt);
+//			speedPriceInt = (int)(speedPriceInt * 1.05f);
+//			speedPrice.text = speedPriceInt.ToString ();
+//			PlayerPrefs.SetInt ("speedPrice", speedPriceInt);
+//			speedTrans.DOScale (1.1f, 0.15f).OnComplete (() => {
+//				speedTrans.DOScale (1f, 0.15f);
+//			});
+//		} else {
+//			speedTrans.DOShakePosition (0.15f, 1, 10, 90, false, true);
+//		}
+//	}
 
 	public void OnCoinBtn(){
 		if (Gold.Instance.UseGold (coinPriceInt)) {
 			UpdateGold ();
+			//UpdateText ();
 			coinLvInt++;
-			coinLevel.text = coinLvInt.ToString ();
+			coinLevel.text = "LV" + coinLvInt;
 			PlayerPrefs.SetInt ("coinLevel", coinLvInt);
 			coinPriceInt = (int)(coinPriceInt * 1.05f);
-			coinPrice.text = coinPriceInt.ToString ();
+			coinPrice.text = "$" + coinPriceInt.ToString ();
 			PlayerPrefs.SetInt ("coinPrice", coinPriceInt);
 			coinTrans.DOScale (1.1f, 0.15f).OnComplete (() => {
 				coinTrans.DOScale (1f, 0.15f);
@@ -60,11 +67,12 @@ public class Upgrade : MonoBehaviour {
 	public void OnOfflineBtn(){
 		if (Gold.Instance.UseGold (offlinePriceInt)) {
 			UpdateGold ();
+			//UpdateText ();
 			offlineLvInt++;
-			offlineLevel.text = offlineLvInt.ToString ();
+			offlineLevel.text = "LV" + offlineLvInt;
 			PlayerPrefs.SetInt ("offlineLevel", offlineLvInt);
 			offlinePriceInt = (int)(offlinePriceInt * 1.05f);
-			offlinePrice.text = offlinePriceInt.ToString ();
+			offlinePrice.text = "$" + offlinePriceInt;
 			PlayerPrefs.SetInt ("offlinePrice", offlinePriceInt);
 			offlineTrans.DOScale (1.1f, 0.15f).OnComplete (() => {
 				offlineTrans.DOScale (1f, 0.15f);
@@ -76,8 +84,8 @@ public class Upgrade : MonoBehaviour {
 
 	public void UpdateText(){
 		speedLvInt = PlayerPrefs.GetInt ("speedLevel", 1);
-		coinLvInt = PlayerPrefs.GetInt ("coinLvInt", 1);
-		offlineLvInt = PlayerPrefs.GetInt ("offlineLvInt", 1);
+		coinLvInt = PlayerPrefs.GetInt ("coinLevel", 1);
+		offlineLvInt = PlayerPrefs.GetInt ("offlineLevel", 1);
 		speedPriceInt = PlayerPrefs.GetInt ("speedPrice", 281);
 		coinPriceInt = PlayerPrefs.GetInt ("coinPrice", 281);
 		offlinePriceInt = PlayerPrefs.GetInt ("offlinePrice", 281);
@@ -102,19 +110,21 @@ public class Upgrade : MonoBehaviour {
 	public void OnMoveBtn(){
 		if (moveFinish) {
 			moveFinish = false;
-			if (moveBtn.eulerAngles.z == 0) {
-				transform.DOMoveX (transform.position.x + 172, 0.5f, false).OnComplete (() => {
+			if (moveBtn.eulerAngles.z == 0) {				
+				skillTrans.DOLocalMoveX (skillTrans.localPosition.x + 626, 0.5f, false).OnComplete (() => {
 					moveBtn.eulerAngles = new Vector3 (0, 0, 180);
 					moveFinish = true;
 				});
 			} else if (moveBtn.eulerAngles.z == 180) {
-				UpdateText ();
-
-				transform.DOMoveX (transform.position.x - 172, 0.5f, false).OnComplete (() => {
+				//UpdateText ();
+				skillTrans.DOLocalMoveX (skillTrans.localPosition.x - 626, 0.5f, false).OnComplete (() => {
 					moveBtn.eulerAngles = new Vector3 (0, 0, 0);
 					moveFinish = true;
 				});
 			}
+			speedTrans.DOScale (1.1f, 0.15f).OnComplete (() => {
+				speedTrans.DOScale (1f, 0.15f);
+			});
 		}
 	}
 }

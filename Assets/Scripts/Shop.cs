@@ -64,14 +64,18 @@ public class Shop : MonoBehaviour {
 		while (true) {
 			if (Input.touchCount > 0 && Input.GetTouch (0).phase == TouchPhase.Moved) {
 				Vector2 touchDelPos = Input.GetTouch(0).deltaPosition;
-				if (touchDelPos.x > 10)  
-				{
-					RotateCy (true);
-					yield return new WaitForSeconds (0.3f);
-				}
-				else if(touchDelPos.x < -10)
+				if (touchDelPos.x > 7)  
 				{
 					RotateCy (false);
+					if (PlayerPrefs.GetInt ("vibration", 1) == 1)
+						MultiHaptic.HapticLight ();
+					yield return new WaitForSeconds (0.3f);
+				}
+				else if(touchDelPos.x < -7)
+				{
+					RotateCy (true);
+					if (PlayerPrefs.GetInt ("vibration", 1) == 1)
+						MultiHaptic.HapticLight ();
 					yield return new WaitForSeconds (0.3f);
 				}
 			}

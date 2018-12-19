@@ -64,7 +64,8 @@ public class TurnTable : MonoBehaviour {
 
 	//点击领取按钮
 	public void OnAwesomeBtn(){	
-		Diamond.Instance.GetDiamond (diamond);	
+		Diamond.Instance.GetDiamond (diamond);
+		MoneyManager.Instance.UpdateDiamond ();
 		PlayerPrefs.SetInt ("NewDayTurn", 0);
 		turnBtn.SetActive(false);
 		gameObject.SetActive (false);

@@ -46,6 +46,8 @@ public class PlayerController : MonoBehaviour {
 	GameObject boxGlove;
 	[SerializeField]
 	GameObject firstHole;
+	[SerializeField]
+	GameObject doubleSettle;
 	string[] perfectWord;
     bool isCoroutining = false;
     //按住蓄力协程
@@ -83,13 +85,16 @@ public class PlayerController : MonoBehaviour {
 	int eulurX = 0;
 	int targetEulur = 150;
 	//旋转速度
-	int eulurSpeed = 8;
+	int eulurSpeed = 2;
+	//
+	int dailyTimes = 0;
 
 	[HideInInspector]
 	public GameObject tempText;
 	[HideInInspector]
 	public string tempTextStr;
 
+	Transform playerParent;
     //0:待机状态
     //1:蓄力状态
     //2:跳跃状态
@@ -126,13 +131,16 @@ public class PlayerController : MonoBehaviour {
 		}
 
         rig = GetComponent<Rigidbody>();
+
         playerColl = GetComponent<BoxCollider>();
-        animator = GetComponent<Animator>();
+
+		animator = GetComponent<Animator>();
 		radarScript = radar.GetComponent<Radar>();		      
 
         rings = new List<string>();
 		scoreDic = new Dictionary<string, float>();	
 		cityOffset = new Vector3 ();
+		//playerParent = transform.parent;
 		perfectWord = new string[]{ "GREAT", "GOOD", "PERFECT", "PRETTY" };
 
 		moneyUIs = GameObject.FindGameObjectsWithTag ("money");
@@ -147,6 +155,7 @@ public class PlayerController : MonoBehaviour {
 
 		floorNumber = 0;
 		isRotate = false;
+		dailyTimes = 0;
 	}
 
 	//tap开始游戏,配合开始按钮使用
@@ -268,9 +277,9 @@ public class PlayerController : MonoBehaviour {
 		return startPos;
 	}
 
-
+	public int flipNumber=0;
     void Update()
-    {
+	{
 		if (Starting) {
 			//待机状态
 			//按住P开始蓄力，进入蓄力状态，碰撞取消，播放蓄力动画
@@ -278,12 +287,12 @@ public class PlayerController : MonoBehaviour {
 				if (Input.GetMouseButton (0) && !CheckGuiRaycastObjects ()) {
 				//if (Input.GetKeyDown (KeyCode.P)) {
 					GameState = 1;
-					playerColl.enabled = false;
-					bodyColl.enabled = false;
+					//playerColl.enabled = false;
+					//bodyColl.enabled = false;
 					animator.SetBool ("Storage", true);
 					animator.SetBool ("Idle", false);
-					int speedLevel = PlayerPrefs.GetInt ("speedLevel", 1);
-					eulurSpeed = 7 + speedLevel;
+					//int speedLevel = PlayerPrefs.GetInt ("speedLevel", 1);
+					//eulurSpeed = 2;
 				}					
 
 			}
@@ -306,7 +315,12 @@ public class PlayerController : MonoBehaviour {
 					rig.constraints = RigidbodyConstraints.None;
 					Physics.gravity = new Vector3 (0, gravity, 0);
 					rig.AddForce (transform.up * force, ForceMode.Force);
-					//transform.DOLocalRotate (new Vector3 (-transform.eulerAngles.x, 0, 0), 1.5f, RotateMode.LocalAxisAdd);
+					rig.AddForce (Vector3.up * force/3, ForceMode.Force);
+					transform.DOLocalRotate (new Vector3 (-transform.eulerAngles.x-360*flipNumber, 0, 0), 1.5f, RotateMode.LocalAxisAdd).OnComplete(()=>{
+//						FlyGold.Instance.GenerateGoldNoColl (20, transform.position);
+//						int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);
+//						TipPop.GenerateTipStay ("$"+(int)(77*(Mathf.Pow(1.05f,coinLevel))), 0.5f, Color.yellow);
+					});
 
 					GameState = 2;
 					Invoke ("ReColl", 1);
@@ -316,9 +330,9 @@ public class PlayerController : MonoBehaviour {
 					isRotate = false;
 					//StopCoroutine (coroutine);
 
-					Camera.main.DOFieldOfView (70, 1).OnComplete (() => {
-						Camera.main.DOFieldOfView (60, 1);
-					});
+//					Camera.main.DOFieldOfView (70, 1).OnComplete (() => {
+//						Camera.main.DOFieldOfView (60, 1);
+//					});
 
 					alarm.gameObject.SetActive (false);
 					isAlarming = false;
@@ -328,24 +342,26 @@ public class PlayerController : MonoBehaviour {
         //跳跃状态
         else if (GameState == 2) {	
 				if (exitHole) {
-					transform.Rotate (new Vector3 (-2, 0, 0));
-					eulurX += 2;
-					if (CheckGuiRaycastObjects ())
-						return;
-					if (Input.GetMouseButton (0) ) {
-					//if (Input.GetKey (KeyCode.P)&& !CheckGuiRaycastObjects ()) {
-						transform.Rotate (new Vector3 (-eulurSpeed, 0, 0));
-						eulurX += eulurSpeed;
-					}
-					if (eulurX >= targetEulur) {
-						FlyGold.Instance.GenerateGoldNoColl (20, transform.position);
-						if (tempText) {
-							Destroy (tempText);
-						}
-						int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);
-						TipPop.GenerateTipStay ("$"+(int)(77*(Mathf.Pow(1.05f,coinLevel))), 0.5f, Color.yellow);
-						targetEulur += 360;
-					}
+//					int speedLevel = PlayerPrefs.GetInt ("speedLevel", 1)+9;
+//
+//					transform.Rotate (new Vector3 (-speedLevel, 0, 0));
+//					eulurX += speedLevel;
+//					if (CheckGuiRaycastObjects ())
+//						return;
+//					if (Input.GetMouseButton (0) ) {
+//					//if (Input.GetKey (KeyCode.P)&& !CheckGuiRaycastObjects ()) {
+//						transform.Rotate (new Vector3 (-eulurSpeed, 0, 0));
+//						eulurX += eulurSpeed;
+//					}
+//					if (eulurX >= targetEulur) {
+//						FlyGold.Instance.GenerateGoldNoColl (20, transform.position);
+//						if (tempText) {
+//							Destroy (tempText);
+//						}
+//						int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);
+//						TipPop.GenerateTipStay ("$"+(int)(77*(Mathf.Pow(1.05f,coinLevel))), 0.5f, Color.yellow);
+//						targetEulur += 360;
+//					}
 				}
 			}
         //死亡状态
@@ -383,7 +399,7 @@ public class PlayerController : MonoBehaviour {
 	//恢复玩家碰撞
     void ReColl(){
         playerColl.enabled = true;
-		bodyColl.enabled = true;
+		//bodyColl.enabled = true;
     }
 
 	//延迟进入主界面
@@ -423,9 +439,11 @@ public class PlayerController : MonoBehaviour {
 			if (tempText) {
 				TipPop.GenerateTip ("X5", 0.5f,Color.yellow);
 				Destroy (tempText,0.5f);
-				int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);			
+				int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);
+				PlayerPrefs.SetInt ("LevelPassGold", (int)(77 * (Mathf.Pow (1.05f, coinLevel)) * 5));
 				Gold.Instance.GetGold ((int)(77*(Mathf.Pow(1.05f,coinLevel))*5));
-				Gold.Instance.UpdateGold ();
+				MoneyManager.Instance.UpdateGold ();
+				couldShowDoubl = true;
 			}
 		}
 
@@ -436,7 +454,8 @@ public class PlayerController : MonoBehaviour {
             if (coll.collider.tag == "Untagged")
             {
 				float playerEulerX = transform.eulerAngles.x;
-				if ((playerEulerX > 325 && playerEulerX < 360) || (playerEulerX > 0 && playerEulerX < 50)) {
+				//if((eulurX%360)>=295&&(eulurX%360)<=360){
+				//if ((playerEulerX > 325 && playerEulerX < 360) || (playerEulerX > 0 && playerEulerX < 50)) {
 					//获得当前碰撞的点
 					currentColl = coll.contacts [0].point;
 					//检查射线下是否有环
@@ -448,11 +467,11 @@ public class PlayerController : MonoBehaviour {
 					rig.constraints = RigidbodyConstraints.FreezeAll;
 
 
-				} else {
-					GameOverByBoxglove (currentColl);
-					TipPop.GenerateTip ("MISS", 0.5f);	
+				//} else {
+				//	GameOverByBoxglove (currentColl);
+				//	TipPop.GenerateTip ("MISS", 0.5f);	
 					//GameOverByBoxglove (transform.position + new Vector3 (0, -5, 0));
-				}
+				//}
 
             }
 
@@ -469,15 +488,18 @@ public class PlayerController : MonoBehaviour {
 			rig.constraints = RigidbodyConstraints.None;
 			Vector3 carDirection= (transform.position-coll.transform.position).normalized;
 			rig.AddForce((carDirection + transform.up) * carForce, ForceMode.Force);
-			transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.LocalAxisAdd);
+			//transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.LocalAxisAdd);
 			Invoke("ReGame",3);
 			PlayerPrefs.SetInt ("CarHit", PlayerPrefs.GetInt ("CarHit", 0) + 1);
-
+			if (PlayerPrefs.GetInt ("vibration", 1)==1)
+				MultiHaptic.HapticHeavy ();
 			if (tempText) {
 				Destroy (tempText);
 			}
-
-			Invoke("ShowDaily",3);
+			dailyTimes++;
+			if (dailyTimes >= 3) {
+				Invoke ("ShowDaily", 3);
+			}
 		}
 
     }
@@ -504,13 +526,15 @@ public class PlayerController : MonoBehaviour {
 		GameState = 3;
 		rig.constraints = RigidbodyConstraints.None;
 		Vector3 carDirection= (transform.position-golvePos).normalized;
-		rig.AddForce((carDirection + transform.up) * carForce, ForceMode.Force);
-		transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.WorldAxisAdd);
+		//rig.AddForce((carDirection + transform.up) * carForce, ForceMode.Force);
+		rig.AddForce(Vector3.up* carForce, ForceMode.Force);
+		//transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.WorldAxisAdd);
 		Invoke("ReGame",3);
 		//在主角位置生成拳套，面向主角出拳
 		boxGloveTrans = Instantiate (boxGlove, transform.position, Quaternion.identity).transform;
-		boxGloveTrans.up = carDirection;
-		boxGloveTrans.DOMove (transform.position+carDirection*2, 0.3f, false);
+		//boxGloveTrans.up = carDirection;
+		boxGloveTrans.up = Vector3.up;
+		boxGloveTrans.DOMove (transform.position+Vector3.up*3, 0.3f, false);
 		//取消警告
 		alarm.gameObject.SetActive (false);
 
@@ -520,11 +544,17 @@ public class PlayerController : MonoBehaviour {
 			Destroy (tempText);
 		}
 
-		Invoke("ShowDaily",3);
+		dailyTimes++;
+		if (dailyTimes >= 3) {
+			Invoke ("ShowDaily", 3);
+		}
+		if (PlayerPrefs.GetInt ("vibration", 1) == 1)
+			MultiHaptic.HapticHeavy ();
 	}
 
 	void ShowDaily(){		
 		daily.SetActive (true);
+		dailyTimes = 0;
 	}
 
 	//清空环
@@ -550,12 +580,15 @@ public class PlayerController : MonoBehaviour {
 
 	//往黑洞中间施加力，之后改为被黑洞吸引
 	IEnumerator AddForceInHole(){
-		int i = 3;
-		while (i <= 0) {
-			i--;
-			rig.AddForce ((holeTarget.position - transform.position)*50);
-			yield return new WaitForSeconds (0.2f);
-		}
+//		int i = 3;
+//		while (i <= 0) {
+//			i--;
+//			rig.AddForce ((holeTarget.position - transform.position)*50);
+//			yield return new WaitForSeconds (0.2f);
+//		}
+		if (holeTarget)
+			transform.DOMove (holeTarget.position, 0.2f, false);
+		yield return null;
 	}		
 
 	[HideInInspector]
@@ -566,7 +599,8 @@ public class PlayerController : MonoBehaviour {
 	{
 		//如果离开了黑洞
 		if (other.tag == "hole")
-		{
+		{	
+			Debug.Log ("exit");
 			GameObject[] inholes = GameObject.FindGameObjectsWithTag ("Player");
 			foreach (GameObject go in inholes) {
 				go.layer = 0;
@@ -667,13 +701,15 @@ public class PlayerController : MonoBehaviour {
 			if (ringname == "normal" && GameState != 0) {				
 				GameState = 0;
 				rings.Clear ();
-				if (tempText) {
+				//if (tempText) {
 					TipPop.GenerateTip ("X1", 0.5f,Color.yellow);
-					Destroy (tempText,0.5f);
+				//	Destroy (tempText,0.5f);
 					int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);			
 					Gold.Instance.GetGold ((int)(77*(Mathf.Pow(1.05f,coinLevel))));
-					Gold.Instance.UpdateGold ();
-				}
+					MoneyManager.Instance.UpdateGold ();
+					if (PlayerPrefs.GetInt ("vibration", 1) == 1)
+						MultiHaptic.HapticMedium ();
+				//}
 				return;		
 			} else {
 				//踩中环的时候状态变为待机状态,生成对应的分数，删除踩中的环
@@ -688,14 +724,15 @@ public class PlayerController : MonoBehaviour {
 				});
 
 				rings.Clear ();
-
-				if (tempText) {
+				if (PlayerPrefs.GetInt ("vibration", 1) == 1)
+					MultiHaptic.HapticMedium ();
+				//if (tempText) {
 					TipPop.GenerateTip ("X"+scoreDic [ringname], 0.5f,Color.yellow);
-					Destroy (tempText,0.5f);
+				//	Destroy (tempText,0.5f);
 					int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);			
 					Gold.Instance.GetGold ((int)((int)(77*(Mathf.Pow(1.05f,coinLevel)))*scoreDic [ringname]));
-					Gold.Instance.UpdateGold ();
-				}
+					MoneyManager.Instance.UpdateGold ();
+				//}
 			}
 		}
     }
@@ -819,6 +856,18 @@ public class PlayerController : MonoBehaviour {
 		foreach (GameObject go in moneyUIs) {
 			go.SetActive (!hide);
 		}
+	}
+
+	bool couldShowDoubl = false;
+	void ShowDouble(){
+		if (couldShowDoubl) {
+			Time.timeScale = 0;
+			doubleSettle.SetActive (true);
+			couldShowDoubl = false;
+		}
+	}
+	public void ShowDoubleD(float time){
+		Invoke ("ShowDouble", time);		
 	}
 
 	public EventSystem eventSystem;
