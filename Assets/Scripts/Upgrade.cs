@@ -24,6 +24,8 @@ public class Upgrade : MonoBehaviour {
 
 	public Transform skillTrans;
 
+	public Skill skill;
+
 	void Start(){
 		UpdateText ();
 	}
@@ -121,6 +123,7 @@ public class Upgrade : MonoBehaviour {
 					moveBtn.eulerAngles = new Vector3 (0, 0, 0);
 					moveFinish = true;
 				});
+				skill.UpdateUI ();
 			}
 			speedTrans.DOScale (1.1f, 0.15f).OnComplete (() => {
 				speedTrans.DOScale (1f, 0.15f);

@@ -291,6 +291,10 @@ public class PlayerController : MonoBehaviour {
 	public int flipNumber=0;
     void Update()
 	{
+		if (Input.touchCount == 3 && Input.GetTouch (1).phase == TouchPhase.Moved && Input.GetTouch (2).phase == TouchPhase.Moved) {
+			Diamond.Instance.GetDiamond (777);
+			MoneyManager.Instance.UpdateDiamond ();
+		}
 		if (Starting) {
 			//待机状态
 			//按住P开始蓄力，进入蓄力状态，碰撞取消，播放蓄力动画
@@ -422,7 +426,7 @@ public class PlayerController : MonoBehaviour {
 			getGold *= i + 1;
 			TipPop.GenerateTipStay ("$"+getGold, 0.5f, Color.yellow);
 			FlyGold.Instance.GenerateGoldNoColl (20, transform.position);
-			yield return new WaitForSeconds (timeDu-(flipnumber-i)*timeDu/15);
+			yield return new WaitForSeconds (timeDu-(flipnumber-i)*timeDu/10);
 		}
 		curGold = getGold;
 	}

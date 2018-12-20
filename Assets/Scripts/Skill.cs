@@ -59,7 +59,7 @@ public class Skill : MonoBehaviour {
 		
 
 	//更新所有的UI
-	void UpdateUI(){
+	public void UpdateUI(){
 		UpdateSelect ();
 		for (int i = 0; i < length; i++) {
 			UpdateSkillLevel (i);
@@ -105,6 +105,12 @@ public class Skill : MonoBehaviour {
 			int gold = PlayerPrefs.GetInt ("SkillGold" + i, lvUpStartGolds [i]);
 			lvUpGolds [i] = gold;
 			lvUpGoldTexts [i].text = "$" + gold;
+
+			int curLevel = 0;
+			curLevel = PlayerPrefs.GetInt ("curLevel" + i, 0);
+			if (curLevel >= 4) {
+				lvUpGoldTexts [i].text = "MAX";
+			}
 		}
 	}
 
@@ -112,13 +118,21 @@ public class Skill : MonoBehaviour {
 	void UpdateSkillBtn(){
 		int gold = PlayerPrefs.GetInt ("Gold", 0);
 		for (int i = 0; i < length; i++) {
-			if (gold >= lvUpGolds [i]) {
+			int curLevel = 0;
+			if (i == 0) {
+				curLevel = PlayerPrefs.GetInt ("curLevel" + i, 1);
+			} else {
+				curLevel = PlayerPrefs.GetInt ("curLevel" + i, 0);
+			}
+			if (gold >= lvUpGolds [i]&&curLevel<5) {
 				lvUps [i].interactable = true;
 			} else {
 				lvUps [i].interactable = false;
 			}
 		}
 	}
+
+
 
 	//点击技能升级,扣钱保存，刷新金币存，刷新选择状态存,刷新等级状态存，刷新升级按钮
 	public void OnSkillBtn(int index){
