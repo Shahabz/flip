@@ -20,6 +20,9 @@ public class Skill : MonoBehaviour {
 	//存每个动作的初始升级金币
 	int[] lvUpStartGolds;
 
+	[SerializeField]
+	Animator animator;
+
 	int length;
 	void Start () {		
 		Init ();
@@ -51,6 +54,7 @@ public class Skill : MonoBehaviour {
 			}
 			skillActives.Add (skillActivesGO);
 		}
+			
 	}
 		
 
@@ -61,6 +65,7 @@ public class Skill : MonoBehaviour {
 			UpdateSkillLevel (i);
 		}
 		UpdateSkillGold ();
+		UpdateSkillBtn ();
 	}
 
 	//更新状态存储在curSelect
@@ -115,24 +120,30 @@ public class Skill : MonoBehaviour {
 		}
 	}
 
-	//点击技能升级,扣钱保存，刷新金币存，刷新选择状态存,刷新等级状态存
-	void OnSkillBtn(int index){
+	//点击技能升级,扣钱保存，刷新金币存，刷新选择状态存,刷新等级状态存，刷新升级按钮
+	public void OnSkillBtn(int index){
 		int gold = PlayerPrefs.GetInt ("Gold", 0);
 		Gold.Instance.UseGold (lvUpGolds [index]);
 		MoneyManager.Instance.UpdateGold ();
 		lvUpGolds [index] *= 2;
 		lvUpGoldTexts [index].text = "$" + lvUpGolds [index];
 		PlayerPrefs.SetInt ("SkillGold" + index, lvUpGolds [index]);
-		PlayerPrefs.SetInt ("curSelect", index);
-		UpdateSelect ();
-		PlayerPrefs.SetInt ("curLevel" + index, PlayerPrefs.GetInt ("curLevel" + index, 0)+1);
+		OnSelectBtn (index);
+		if (index == 0) {
+			PlayerPrefs.SetInt ("curLevel" + index, PlayerPrefs.GetInt ("curLevel" + index, 1) + 1);
+		} else {
+			PlayerPrefs.SetInt ("curLevel" + index, PlayerPrefs.GetInt ("curLevel" + index, 0) + 1);
+		}
+		UpdateSkillLevel (index);
+		UpdateSkillBtn ();
 	}
 
 	//点击人物选择
-	void OnSelectBtn(int index){
-		
-	}
+	public void OnSelectBtn(int index){
+		PlayerPrefs.SetInt ("curSelect", index);
+		UpdateSelect ();
 
+	}
 
 
 }

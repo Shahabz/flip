@@ -184,7 +184,7 @@ public class PlayerController : MonoBehaviour {
 		animator.SetBool ("Idle", false);
 		animator.SetBool ("Storage", true);
 		animator.SetBool ("Storage", false);
-		animator.SetBool ("Jump", true);
+		SetJumpBool (true);
 		rig.constraints = RigidbodyConstraints.None;
 		transform.position = initPos.position;
 	}
@@ -215,7 +215,7 @@ public class PlayerController : MonoBehaviour {
 
 		//重置动画
 		animator.SetBool("Idle", true);
-		animator.SetBool("Jump", false);
+		SetJumpBool (false);
 		animator.SetBool("Storage", false);
 		animator.SetBool("Dead", false);
 
@@ -259,13 +259,24 @@ public class PlayerController : MonoBehaviour {
 			if (transform.eulerAngles.x < 350 && transform.eulerAngles.x > 300) {		
 				rig.constraints = RigidbodyConstraints.None;
 				animator.SetBool ("Storage", false);
-				animator.SetBool ("Jump", true);
+				SetJumpBool (true);
 				rig.AddForce (transform.up * force, ForceMode.Force);
 				transform.DOLocalRotate (new Vector3 (-transform.eulerAngles.x, 0, 0), 1.5f, RotateMode.LocalAxisAdd);
 				Invoke ("ReColl", 1);
 				yield break;
 			}
 			yield return null;
+		}
+	}
+		
+	void SetJumpBool(bool boo){
+		int index = PlayerPrefs.GetInt ("curSelect", 0);
+		for (int i = 0; i < 5; i++) {
+			if (i == index) {
+				animator.SetBool ("Jump" + i, boo);
+			} else {
+				animator.SetBool ("Jump" + i, false);
+			}
 		}
 	}
 
@@ -316,23 +327,22 @@ public class PlayerController : MonoBehaviour {
 					Physics.gravity = new Vector3 (0, gravity, 0);
 					rig.AddForce (transform.up * force, ForceMode.Force);
 					rig.AddForce (Vector3.up * force/3, ForceMode.Force);
-					transform.DOLocalRotate (new Vector3 (-transform.eulerAngles.x-360*flipNumber, 0, 0), 1.5f, RotateMode.LocalAxisAdd).OnComplete(()=>{
-//						FlyGold.Instance.GenerateGoldNoColl (20, transform.position);
-//						int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);
-//						TipPop.GenerateTipStay ("$"+(int)(77*(Mathf.Pow(1.05f,coinLevel))), 0.5f, Color.yellow);
+					flipNumber = PlayerPrefs.GetInt ("curLevel" + PlayerPrefs.GetInt ("curSelect", 0), 1)-1;	
+					StartCoroutine(GenerateGoldByFlip(flipNumber,1.5f));
+					transform.DOLocalRotate (new Vector3 (-transform.eulerAngles.x-360*flipNumber, 0, 0), 1.5f, RotateMode.LocalAxisAdd).OnComplete(()=>{						
 					});
 
 					GameState = 2;
 					Invoke ("ReColl", 1);
 					animator.SetBool ("Storage", false);
-					animator.SetBool ("Jump", true);
+					SetJumpBool (true);
 
 					isRotate = false;
 					//StopCoroutine (coroutine);
 
-//					Camera.main.DOFieldOfView (70, 1).OnComplete (() => {
-//						Camera.main.DOFieldOfView (60, 1);
-//					});
+					Camera.main.DOFieldOfView (70, 1).OnComplete (() => {
+						Camera.main.DOFieldOfView (60, 1);
+					});
 
 					alarm.gameObject.SetActive (false);
 					isAlarming = false;
@@ -396,6 +406,27 @@ public class PlayerController : MonoBehaviour {
 		}
     }
 
+	//累积获得的金币
+	int curGold = 0;
+	IEnumerator GenerateGoldByFlip(int flipnumber,float time){
+		curGold = 0;
+		float timeDu = time /(flipnumber+1);
+		int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);
+		int curAction = (PlayerPrefs.GetInt ("curSelect", 0))*2+1;
+		int getGold = ((int)(77 * (Mathf.Pow (1.05f, coinLevel)))) * curAction;
+		yield return new WaitForSeconds (timeDu/5); 
+		for (int i = 0; i < flipnumber+1; i++) {
+			if (tempText) {
+				Destroy (tempText);
+			}
+			getGold *= i + 1;
+			TipPop.GenerateTipStay ("$"+getGold, 0.5f, Color.yellow);
+			FlyGold.Instance.GenerateGoldNoColl (20, transform.position);
+			yield return new WaitForSeconds (timeDu-(flipnumber-i)*timeDu/15);
+		}
+		curGold = getGold;
+	}
+
 	//恢复玩家碰撞
     void ReColl(){
         playerColl.enabled = true;
@@ -424,7 +455,7 @@ public class PlayerController : MonoBehaviour {
 			//状态变为待机，播放待机动画
 			GameState = 0;
 			animator.SetBool("Idle", true);
-			animator.SetBool("Jump", false);
+			SetJumpBool (false);
 			//如果是进入新关卡则增加关卡数并刷新关卡UI
 			if(Level.Instance.slider.value == 1){
 				PlayerPrefs.SetInt ("Level", PlayerPrefs.GetInt ("Level", 1) + 1);
@@ -439,9 +470,8 @@ public class PlayerController : MonoBehaviour {
 			if (tempText) {
 				TipPop.GenerateTip ("X5", 0.5f,Color.yellow);
 				Destroy (tempText,0.5f);
-				int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);
-				PlayerPrefs.SetInt ("LevelPassGold", (int)(77 * (Mathf.Pow (1.05f, coinLevel)) * 5));
-				Gold.Instance.GetGold ((int)(77*(Mathf.Pow(1.05f,coinLevel))*5));
+				PlayerPrefs.SetInt ("LevelPassGold", curGold*5);
+				Gold.Instance.GetGold (curGold*5);
 				MoneyManager.Instance.UpdateGold ();
 				couldShowDoubl = true;
 			}
@@ -510,7 +540,7 @@ public class PlayerController : MonoBehaviour {
 			ClearRing ();
 			RadarScan ();
 			animator.SetBool("Idle", true);
-			animator.SetBool("Jump", false);
+			SetJumpBool (false);
 		}
 	}
 
@@ -527,7 +557,7 @@ public class PlayerController : MonoBehaviour {
 		rig.constraints = RigidbodyConstraints.None;
 		Vector3 carDirection= (transform.position-golvePos).normalized;
 		//rig.AddForce((carDirection + transform.up) * carForce, ForceMode.Force);
-		rig.AddForce(Vector3.up* carForce, ForceMode.Force);
+		rig.AddForce(Vector3.up* carForce*1.3f, ForceMode.Force);
 		//transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.WorldAxisAdd);
 		Invoke("ReGame",3);
 		//在主角位置生成拳套，面向主角出拳
@@ -599,8 +629,7 @@ public class PlayerController : MonoBehaviour {
 	{
 		//如果离开了黑洞
 		if (other.tag == "hole")
-		{	
-			Debug.Log ("exit");
+		{		
 			GameObject[] inholes = GameObject.FindGameObjectsWithTag ("Player");
 			foreach (GameObject go in inholes) {
 				go.layer = 0;
@@ -699,16 +728,19 @@ public class PlayerController : MonoBehaviour {
 			//如果没有踩中环,弹出MISS并拳头打飞
 			string ringname = CheckRing ();
 			if (ringname == "normal" && GameState != 0) {				
-				GameState = 0;
-				rings.Clear ();
+				//GameState = 0;
+				//rings.Clear ();
 				//if (tempText) {
-					TipPop.GenerateTip ("X1", 0.5f,Color.yellow);
-				//	Destroy (tempText,0.5f);
-					int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);			
-					Gold.Instance.GetGold ((int)(77*(Mathf.Pow(1.05f,coinLevel))));
-					MoneyManager.Instance.UpdateGold ();
-					if (PlayerPrefs.GetInt ("vibration", 1) == 1)
-						MultiHaptic.HapticMedium ();
+				//	TipPop.GenerateTip ("X1", 0.5f,Color.yellow);					
+				//	int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);			
+				//	Gold.Instance.GetGold ((int)(77*(Mathf.Pow(1.05f,coinLevel))));
+				//	MoneyManager.Instance.UpdateGold ();
+				Destroy (tempText,0.5f);
+				if (PlayerPrefs.GetInt ("vibration", 1) == 1)
+					MultiHaptic.HapticMedium ();
+				//TipPop.GenerateTip ("MISS", 0.5f);
+				GameOverByBoxglove (currentColl);
+				TipPop.GenerateTip ("-$"+curGold, 0.5f,Color.yellow);
 				//}
 				return;		
 			} else {
@@ -726,13 +758,13 @@ public class PlayerController : MonoBehaviour {
 				rings.Clear ();
 				if (PlayerPrefs.GetInt ("vibration", 1) == 1)
 					MultiHaptic.HapticMedium ();
-				//if (tempText) {
+				if (tempText) {
 					TipPop.GenerateTip ("X"+scoreDic [ringname], 0.5f,Color.yellow);
-				//	Destroy (tempText,0.5f);
-					int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);			
-					Gold.Instance.GetGold ((int)((int)(77*(Mathf.Pow(1.05f,coinLevel)))*scoreDic [ringname]));
+					Destroy (tempText,0.5f);
+					//int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);			
+					Gold.Instance.GetGold ((int)(curGold*scoreDic [ringname]));
 					MoneyManager.Instance.UpdateGold ();
-				//}
+				}
 			}
 		}
     }
