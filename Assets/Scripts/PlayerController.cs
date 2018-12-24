@@ -48,6 +48,10 @@ public class PlayerController : MonoBehaviour {
 	GameObject firstHole;
 	[SerializeField]
 	GameObject doubleSettle;
+	[SerializeField]
+	Transform powerPos;
+	[SerializeField]
+	Transform powerUI;
 	string[] perfectWord;
     bool isCoroutining = false;
     //按住蓄力协程
@@ -57,6 +61,8 @@ public class PlayerController : MonoBehaviour {
 	//金币箱子
 	[SerializeField]
 	GameObject goldBox;
+	[SerializeField]
+	LaunchArc launchArc;
 
 	[HideInInspector]
 	public Transform holeTarget;
@@ -291,6 +297,7 @@ public class PlayerController : MonoBehaviour {
 	public int flipNumber=0;
     void Update()
 	{
+		
 		if (Input.touchCount == 3 && Input.GetTouch (1).phase == TouchPhase.Moved && Input.GetTouch (2).phase == TouchPhase.Moved) {
 			Diamond.Instance.GetDiamond (777);
 			MoneyManager.Instance.UpdateDiamond ();
@@ -323,6 +330,7 @@ public class PlayerController : MonoBehaviour {
 
 				//松开P停止蓄力，接触角色限制，改变重力，往头朝向发射，旋转一圈，进入跳跃状态，1秒后恢复碰撞，开始跳跃动画，停止旋转，摄像机扩大视野范围，然后缩小视野范围，取消警告
 				if (Input.GetMouseButtonUp (0) ) {
+					HidePower(true);
 				//if (Input.GetKeyUp (KeyCode.P)) {
 					eulurX = 0;
 					targetEulur = 150;
@@ -330,7 +338,7 @@ public class PlayerController : MonoBehaviour {
 					rig.constraints = RigidbodyConstraints.None;
 					Physics.gravity = new Vector3 (0, gravity, 0);
 					rig.AddForce (transform.up * force, ForceMode.Force);
-					rig.AddForce (Vector3.up * force/3, ForceMode.Force);
+					//rig.AddForce (Vector3.up * force/3, ForceMode.Force);
 					flipNumber = PlayerPrefs.GetInt ("curLevel" + PlayerPrefs.GetInt ("curSelect", 0), 1)-1;	
 					StartCoroutine(GenerateGoldByFlip(flipNumber,1.5f));
 					transform.DOLocalRotate (new Vector3 (-transform.eulerAngles.x-360*flipNumber, 0, 0), 1.5f, RotateMode.LocalAxisAdd).OnComplete(()=>{						
@@ -436,6 +444,7 @@ public class PlayerController : MonoBehaviour {
         playerColl.enabled = true;
 		//bodyColl.enabled = true;
     }
+		
 
 	//延迟进入主界面
 	void GameOver(float delay){
@@ -620,8 +629,10 @@ public class PlayerController : MonoBehaviour {
 //			rig.AddForce ((holeTarget.position - transform.position)*50);
 //			yield return new WaitForSeconds (0.2f);
 //		}
-		if (holeTarget)
+		if (holeTarget) {
 			transform.DOMove (holeTarget.position, 0.2f, false);
+		}
+		
 		yield return null;
 	}		
 
@@ -629,6 +640,70 @@ public class PlayerController : MonoBehaviour {
 	//记录进入黑洞后的玩家位置
 	public Vector3 transformPre = Vector3.zero;
 	bool exitHole = false;
+//	void OnTriggerExit(Collider other)
+//	{
+//		//如果离开了黑洞
+//		if (other.tag == "hole")
+//		{		
+//			GameObject[] inholes = GameObject.FindGameObjectsWithTag ("Player");
+//			foreach (GameObject go in inholes) {
+//				go.layer = 0;
+//			}
+//
+//			exitHole = true;
+//
+//			//删除存在的黑洞
+//			if (firstHole) {
+//				firstHole.SetActive(false);
+//			}
+//			if(holeTarget){
+//				Destroy(holeTarget.Find("Hole").gameObject);
+//			}
+//
+//			//记录下降层数
+//			//radarScript.floorNumber = PlayerPrefs.GetInt ("Floor", 0);
+//			//PlayerPrefs.SetInt ("Floor", floorNumber);
+//			floorNumber++;
+//
+//			//锁定主角的X和Z坐标
+//			rig.constraints = RigidbodyConstraints.FreezePositionX;
+//			rig.constraints = RigidbodyConstraints.FreezePositionZ;
+//
+//			//反向移动城市
+//			//穿过黑洞后城镇往下移动100米，获得一个随机出生点
+//			city.transform.position += new Vector3(0, -100, 0);
+//			nextLevelPos = InitPlayerPos ();
+//			//进入第一层时,历史记录为空则随机生成，否则使用历史记录
+//			//第二层开始一直取随机位置
+//			if (floorNumber == 1) {
+//				Vector3 preCityoffset = SaveManager.Instance.GetVector3 ("TotalCityOffset");
+//				if (preCityoffset == Vector3.zero) {
+//					cityOffset = transform.position - new Vector3 (nextLevelPos.x, 0, nextLevelPos.z);
+//				} else {
+//					cityOffset = new Vector3 (preCityoffset.x, 0, preCityoffset.z);
+//				}
+//				totalCityOffset += cityOffset;
+//			} else if(floorNumber>1) {				
+//				SaveManager.Instance.ClearPosList ();
+//				radarScript.levelPos.Clear ();
+//				cityOffset = transform.position - new Vector3 (nextLevelPos.x, 0, nextLevelPos.z);
+//				totalCityOffset += transformPre - nextLevelPos;
+//			}
+//			//每一层记录城市总位移
+//			SaveManager.Instance.SetVector3 ("TotalCityOffset", totalCityOffset);
+//
+//			Vector3 cityPos = city.transform.position;
+//			city.transform.DOLocalMoveX (cityPos.x + cityOffset.x, 0.1f, false);
+//			city.transform.DOLocalMoveZ (cityPos.z + cityOffset.z, 0.1f, false).OnComplete(()=>{
+//				//纠正人物方向
+//				transform.DORotate (new Vector3 (0, 180, 0), 1.5f, RotateMode.Fast);
+//			});	
+//			//新关卡生成盒子
+//			Instantiate (goldBox, nextLevelPos+new Vector3(cityOffset.x,0,cityOffset.z),Quaternion.identity);
+//			//记录本次离开黑洞后的玩家位置，供下次使用
+//			transformPre = transform.position;
+//		}
+//	}
 	void OnTriggerExit(Collider other)
 	{
 		//如果离开了黑洞
@@ -727,6 +802,8 @@ public class PlayerController : MonoBehaviour {
     //生成分数,还需要生成文字perfect提示
     void ScoreGenerate(){	
 		if (!scoreGenerating) {
+			//powerUI.gameObject.SetActive (false);
+
 			scoreGenerating = true;
 			Invoke ("ResetScoreGenerate", 1);
 			//如果没有踩中环,弹出MISS并拳头打飞
@@ -801,6 +878,10 @@ public class PlayerController : MonoBehaviour {
 			float MaxAngle = 0;
 			float totalAngle = 0;
 			float speed = -1f;
+			//powerUI.gameObject.SetActive (true);
+			HidePower(false);
+			Image power = powerUI.Find ("power").GetComponent<Image> ();
+			powerUI.position = Camera.main.WorldToScreenPoint (powerPos.position);
 			while (isRotate)
 			{			
 				MaxAngle += speed;
@@ -812,15 +893,40 @@ public class PlayerController : MonoBehaviour {
 					GameOverByBoxglove (transform.position + new Vector3 (0, -5, 0));
 					yield break;
 				}
-				if (Mathf.Abs(MaxAngle) > 60) {
+				if (Mathf.Abs(MaxAngle) > 60) {					
 					speed *= -1;
 					MaxAngle = 0;
 				}			
 				transform.Rotate(new Vector3(1, 0, 0), speed);
+
+
+				if (MaxAngle > 0) {
+				//	launchArc.angle = 30 + MaxAngle;
+					power.fillAmount = 1-MaxAngle/60;
+				} else if(MaxAngle < 0) {
+				//	launchArc.angle = 90 + MaxAngle;
+					power.fillAmount = MaxAngle/-60;
+				}
+				//launchArc.RenderArc ();
 				yield return null;
             }
         }
     }
+
+	void HidePower(bool hide){
+		Image bg = powerUI.Find ("powerBG").GetComponent<Image> ();
+		Image power = powerUI.Find ("power").GetComponent<Image> ();
+		Text max = powerUI.Find ("max").GetComponent<Text> ();
+		if (hide) {
+			bg.DOColor (Color.clear, 0.5f);
+			power.DOColor (Color.clear, 0.5f);
+			max.DOColor (Color.clear, 0.5f);
+		} else {
+			max.DOColor (new Color (1, 0, 31 / 255f), 0.2f);
+			power.DOColor (Color.white, 0.2f);
+			bg.DOColor (new Color(207/255f,207/255f,207/255f),0.2f);
+		}
+	}
 		
 
     //初始化环倍数
