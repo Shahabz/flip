@@ -51,8 +51,7 @@ public class GameStart : MonoBehaviour {
 
 	public void ChangeLevel(){
 		PlayerPrefs.SetInt ("changeLevel", 1);
-		PlayerController.Instance.GameOver ();
-		HideStartUI (true);
+		PlayerController.Instance.GameOver ();	
 	}
 
 	int change = 0;

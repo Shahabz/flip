@@ -25,7 +25,8 @@ public class Level : MonoBehaviour {
 
 	//刷新关卡数
 	public void UpdateLevel(){
-		int level = PlayerPrefs.GetInt ("Level", 1);
+		int curMapIndex = PlayerPrefs.GetInt ("CurMap", 0);
+		int level = PlayerPrefs.GetInt ("Level"+curMapIndex, 1);
 		curLevel.text = level.ToString ();
 		nextLevel.text = (level + 1).ToString ();
 	}

@@ -59,6 +59,8 @@ public class Map : MonoBehaviour {
 		for (int i = 0; i < count; i++) {
 			environments [i].SetActive (i == index);
 		}
+		PlayerController.Instance.city = environments [index];
+
 		PlayerPrefs.SetInt ("CurMap", index);
 	}
 

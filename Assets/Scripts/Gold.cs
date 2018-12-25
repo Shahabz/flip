@@ -16,7 +16,8 @@ public class Gold : MonoBehaviour {
 		instance = this;
 	}
 
-	void Start(){		
+	void Start(){	
+		//GetGold (9999999);	
 		UpdateGold();
 	}
 

@@ -47,4 +47,18 @@ public class TipPop : MonoBehaviour {
 		});
 	}
 
+	public static void GenerateTipPerfect(string str, float time,Color color)
+	{
+		GameObject tip = Resources.Load("tip") as GameObject;
+		GameObject tipObj = Instantiate(tip, GameObject.Find("Canvas").transform);
+		//tipObj.transform.position -= new Vector3 (0, 50, 0);
+		Text text = tipObj.GetComponent<Text>();
+		text.text = str;
+		text.color = color;
+		text.transform.DOScale(1.5f, time);
+		text.DOColor (new Color(255/255,246/255f,0,0), time).OnComplete (()=>{
+			Destroy(text.gameObject);
+		});
+	}
+
 }

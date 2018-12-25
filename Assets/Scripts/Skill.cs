@@ -136,13 +136,13 @@ public class Skill : MonoBehaviour {
 
 	//点击技能升级,扣钱保存，刷新金币存，刷新选择状态存,刷新等级状态存，刷新升级按钮
 	public void OnSkillBtn(int index){
+		OnSelectBtn (index);
 		int gold = PlayerPrefs.GetInt ("Gold", 0);
 		Gold.Instance.UseGold (lvUpGolds [index]);
 		MoneyManager.Instance.UpdateGold ();
 		lvUpGolds [index] *= 2;
 		lvUpGoldTexts [index].text = "$" + lvUpGolds [index];
 		PlayerPrefs.SetInt ("SkillGold" + index, lvUpGolds [index]);
-		OnSelectBtn (index);
 		if (index == 0) {
 			PlayerPrefs.SetInt ("curLevel" + index, PlayerPrefs.GetInt ("curLevel" + index, 1) + 1);
 		} else {
@@ -154,8 +154,12 @@ public class Skill : MonoBehaviour {
 
 	//点击人物选择
 	public void OnSelectBtn(int index){
-		PlayerPrefs.SetInt ("curSelect", index);
-		UpdateSelect ();
+		if (PlayerPrefs.GetInt ("curLevel" + index, 0) > 0) {
+			PlayerPrefs.SetInt ("curSelect", index);
+			UpdateSelect ();
+		} else {
+			TipPop.GenerateTip ("Not unlocked", 0.5f);
+		}
 
 	}
 

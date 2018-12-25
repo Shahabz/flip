@@ -24,13 +24,15 @@ public class SaveManager : MonoBehaviour {
 			SaveVector3 (posList [i], i);
 		}
 		//记录下当前生成环的次数，进入新关卡需要清空
-		if (posList.Count > PlayerPrefs.GetInt ("PosCount", 0))
-			PlayerPrefs.SetInt ("PosCount", posList.Count);
+		int curMapIndex = PlayerPrefs.GetInt ("CurMap", 0);
+		if (posList.Count > PlayerPrefs.GetInt ("PosCount"+curMapIndex, 0))
+			PlayerPrefs.SetInt ("PosCount"+curMapIndex, posList.Count);
 	}
 
 	//读取所存储的列表
 	public List<Vector3> ReadLevelPos(){
-		int PosCount = PlayerPrefs.GetInt ("PosCount", 0);
+		int curMapIndex = PlayerPrefs.GetInt ("CurMap", 0);
+		int PosCount = PlayerPrefs.GetInt ("PosCount"+curMapIndex, 0);
 		List<Vector3> posList = new List<Vector3> ();
 		for (int i = 0; i < PosCount; i++) {
 			posList.Add (ReadVector3 (i));
@@ -40,34 +42,39 @@ public class SaveManager : MonoBehaviour {
 
 	//清空列表
 	public void ClearPosList(){
-		PlayerPrefs.SetInt ("PosCount", 0);
+		int curMapIndex = PlayerPrefs.GetInt ("CurMap", 0);
+		PlayerPrefs.SetInt ("PosCount"+curMapIndex, 0);
 	}
 
 	//配合列表存储使用
 	void SaveVector3(Vector3 v3,int index){
-		PlayerPrefs.SetFloat ("LevelPosX" + index, v3.x);
-		PlayerPrefs.SetFloat ("LevelPosY" + index, v3.y);
-		PlayerPrefs.SetFloat ("LevelPosZ" + index, v3.z);
+		int curMapIndex = PlayerPrefs.GetInt ("CurMap", 0);
+		PlayerPrefs.SetFloat ("LevelPosX" + index+curMapIndex, v3.x);
+		PlayerPrefs.SetFloat ("LevelPosY" + index+curMapIndex, v3.y);
+		PlayerPrefs.SetFloat ("LevelPosZ" + index+curMapIndex, v3.z);
 	}
 	//配合列表读取使用
 	Vector3 ReadVector3(int index){
-		float x = PlayerPrefs.GetFloat ("LevelPosX" + index, 0);
-		float y = PlayerPrefs.GetFloat ("LevelPosY" + index, 0);
-		float z = PlayerPrefs.GetFloat ("LevelPosZ" + index, 0);
+		int curMapIndex = PlayerPrefs.GetInt ("CurMap", 0);
+		float x = PlayerPrefs.GetFloat ("LevelPosX" + index+curMapIndex, 0);
+		float y = PlayerPrefs.GetFloat ("LevelPosY" + index+curMapIndex, 0);
+		float z = PlayerPrefs.GetFloat ("LevelPosZ" + index+curMapIndex, 0);
 		return new Vector3 (x, y, z);
 	}
 
 	//存储三维坐标
 	public void SetVector3(string name,Vector3 v3){
-		PlayerPrefs.SetFloat (name + "X", v3.x);
-		PlayerPrefs.SetFloat (name + "Y", v3.y);
-		PlayerPrefs.SetFloat (name + "Z", v3.z);
+		int curMapIndex = PlayerPrefs.GetInt ("CurMap", 0);
+		PlayerPrefs.SetFloat (name + "X"+curMapIndex, v3.x);
+		PlayerPrefs.SetFloat (name + "Y"+curMapIndex, v3.y);
+		PlayerPrefs.SetFloat (name + "Z"+curMapIndex, v3.z);
 	}
 	//读取三维坐标
 	public Vector3 GetVector3(string name){
-		float x = PlayerPrefs.GetFloat (name + "X", 0);
-		float y = PlayerPrefs.GetFloat (name + "Y", 0);
-		float z = PlayerPrefs.GetFloat (name + "Z", 0);
+		int curMapIndex = PlayerPrefs.GetInt ("CurMap", 0);
+		float x = PlayerPrefs.GetFloat (name + "X"+curMapIndex, 0);
+		float y = PlayerPrefs.GetFloat (name + "Y"+curMapIndex, 0);
+		float z = PlayerPrefs.GetFloat (name + "Z"+curMapIndex, 0);
 		return new Vector3 (x, y, z);
 	}
 }
