@@ -135,8 +135,7 @@ public class Skill : MonoBehaviour {
 
 
 	//点击技能升级,扣钱保存，刷新金币存，刷新选择状态存,刷新等级状态存，刷新升级按钮
-	public void OnSkillBtn(int index){
-		OnSelectBtn (index);
+	public void OnSkillBtn(int index){		
 		int gold = PlayerPrefs.GetInt ("Gold", 0);
 		Gold.Instance.UseGold (lvUpGolds [index]);
 		MoneyManager.Instance.UpdateGold ();
@@ -150,6 +149,7 @@ public class Skill : MonoBehaviour {
 		}
 		UpdateSkillLevel (index);
 		UpdateSkillBtn ();
+		OnSelectBtn (index);
 	}
 
 	//点击人物选择

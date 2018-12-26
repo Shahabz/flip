@@ -135,6 +135,9 @@ public class PlayerController : MonoBehaviour {
 
     //初始化
     void Start () {
+
+		PlayerPrefs.SetInt ("Level1", 24);
+
 		//PlayerPrefs.DeleteAll ();
 		if (PlayerPrefs.GetInt ("GuideScene", 0) == 0) {
 			SceneManager.LoadScene ("GuideScene");
@@ -361,9 +364,14 @@ public class PlayerController : MonoBehaviour {
 			InitRadarRings (startsPosArray [curLevel - 1].transform);
 			targetStartPos = startsPosArray [curLevel - 1].transform;
 		} else {
-			startPos = startsPosArray [Random.Range(1,maxLevel+1)].transform.position;
-			InitRadarRings (startsPosArray [Random.Range(1,maxLevel+1)].transform);
-			targetStartPos = startsPosArray [curLevel - 1].transform;
+			int nextLevel = PlayerPrefs.GetInt ("Level" + curMapIndex + curLevel, 0);
+			if(nextLevel==0){
+				nextLevel = Random.Range (1, maxLevel + 1);
+			}
+			PlayerPrefs.SetInt ("Level" + curMapIndex + curLevel, nextLevel);
+			startPos = startsPosArray [nextLevel].transform.position;
+			InitRadarRings (startsPosArray [nextLevel].transform);
+			targetStartPos = startsPosArray [nextLevel].transform;
 		}
 		return startPos;
 	}
@@ -581,7 +589,6 @@ public class PlayerController : MonoBehaviour {
 					Invoke("GenerateNewRing", 0.1f);
 					//一段时间后锁定主角
 					rig.constraints = RigidbodyConstraints.FreezeAll;
-
 
 				//} else {
 				//	GameOverByBoxglove (currentColl);

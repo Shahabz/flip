@@ -91,7 +91,9 @@ public class Daily : MonoBehaviour {
 			missionGO[3] =freeGo;
 		} else if (PlayerPrefs.GetInt ("freeMission", 0) == 1){
 			Transform go = Instantiate (mission, content).transform;
-
+			if (missionGO [3]!=transEx) {
+				Destroy (missionGO [3].gameObject);
+			}
 			missionGO[3] =go;
 			string Mission_name;
 			if (PlayerPrefs.GetString ("Mission_name4", "null") == "null") {
