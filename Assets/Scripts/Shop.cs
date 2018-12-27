@@ -10,6 +10,7 @@ public class Shop : MonoBehaviour {
 	[SerializeField]
 	GameObject[] hats;
 	int hatIndex;
+	GameObject[] lockObjs;
 
 	[SerializeField]
 	Animator animator;
@@ -34,8 +35,11 @@ public class Shop : MonoBehaviour {
 	void Start () {
 		rotateY = 13.3f;
 		hatMats = new Material[skinRender.Length];
+		lockObjs = new GameObject[hats.Length];
 		for (int i = 0; i < hatMats.Length; i++) {
 			hatMats [i] = skinRender [i].material;
+			lockObjs [i] = hats [i].transform.Find ("lock").gameObject;
+			lockObjs [i].SetActive (false);
 		}
 		InitHat ();
 		initHatPrice ();
@@ -84,7 +88,7 @@ public class Shop : MonoBehaviour {
 	}
 
 	//切换帽子选择，true为往右看，false往左看
-	void RotateCy(bool dir){		
+	public void RotateCy(bool dir){		
 		float yAngle = transform.eulerAngles.y;
 		if ((rotateY >= 73f && dir == false) || (rotateY <= 14f + ((hats.Length - 2) * 60) && dir == true)) {
 			if (dir) {
@@ -94,6 +98,7 @@ public class Shop : MonoBehaviour {
 				if (hatIndex >= 1 && hatIndex <= 11) {
 					hats [hatIndex + 3].SetActive (true);
 				}
+
 			} else {
 				if (hatIndex <= 13 && hatIndex >= 3) {
 					hats [hatIndex - 3].SetActive (true);
@@ -106,6 +111,17 @@ public class Shop : MonoBehaviour {
 			rotateY += (dir ? 1 : -1) * 60;
 			hats [hatIndex].GetComponent<Animator> ().enabled = false;
 			hatIndex += (dir ? 1 : -1);
+			if (dir) {
+				if (!lockState [hatIndex]&&hatIndex != 0) {						
+					lockObjs [hatIndex].SetActive (true);
+				}
+				lockObjs [hatIndex-1].SetActive (false);
+			} else {
+				if (!lockState [hatIndex] && hatIndex != 0) {					
+					lockObjs [hatIndex].SetActive (true);					
+				}
+				lockObjs [hatIndex+1].SetActive (false);
+			}
 			transform.DORotate (new Vector3 (0, rotateY, 0), 0.3f, RotateMode.Fast).OnComplete (()=>{
 				Animator hatAnim = hats [hatIndex].GetComponent<Animator> ();
 				hatAnim.enabled = true;
@@ -116,6 +132,7 @@ public class Shop : MonoBehaviour {
 				transform.DOScale (1f,0.15f);
 			});
 			UpdateBuyBtn(hatIndex);
+
 		}
 	}
 
@@ -125,11 +142,11 @@ public class Shop : MonoBehaviour {
 		for(int i=1;i<hats.Length;i++){			
 			if (PlayerPrefs.GetInt (hats [i].name, 0) == 0) {
 				skinRender [i].material = locking;
-				hats [i].transform.Find ("lock").gameObject.SetActive (true);
+				//hats [i].transform.Find ("lock").gameObject.SetActive (true);
 				lockState [i] = false;
 			} else {
 				lockState [i] = true;
-				hats [i].transform.Find ("lock").gameObject.SetActive (false);
+				//hats [i].transform.Find ("lock").gameObject.SetActive (false);
 			}
 		}
 	}
@@ -156,6 +173,7 @@ public class Shop : MonoBehaviour {
 			chooseBtn.SetActive (true);
 			buyBtn.SetActive (false);
 			OnChooseBtn ();
+			InitHat ();
 		}
 	}
 

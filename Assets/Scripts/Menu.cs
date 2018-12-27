@@ -13,7 +13,7 @@ public class Menu : MonoBehaviour {
 	[SerializeField]
 	GameObject setting;
 	[SerializeField]
-	GameObject turnTable;
+	public GameObject turnTable;
 	[SerializeField]
 	GameObject mission;
 	public GameObject turnBtn;
@@ -71,6 +71,9 @@ public class Menu : MonoBehaviour {
 
 	//先看广告再转转盘
 	public void OnTurnBtn(){
+		if (PlayerPrefs.GetInt ("TurnHomeFinish", 0) == 1) {			
+			return;
+		}
 		if (TGSDK.CouldShowAd (TGSDKManager.turnID)) {
 			TGSDK.ShowAd (TGSDKManager.turnID);
 			TGSDK.AdCloseCallback = (string obj) => {

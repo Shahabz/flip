@@ -108,9 +108,10 @@ public class Skill : MonoBehaviour {
 
 			int curLevel = 0;
 			curLevel = PlayerPrefs.GetInt ("curLevel" + i, 0);
-			if (curLevel >= 4) {
+			if (curLevel >= 5) {
 				lvUpGoldTexts [i].text = "MAX";
 			}
+
 		}
 	}
 
@@ -149,6 +150,7 @@ public class Skill : MonoBehaviour {
 		}
 		UpdateSkillLevel (index);
 		UpdateSkillBtn ();
+		UpdateSkillGold ();
 		OnSelectBtn (index);
 	}
 

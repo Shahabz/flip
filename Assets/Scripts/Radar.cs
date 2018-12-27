@@ -159,20 +159,26 @@ public class Radar : MonoBehaviour {
 		}
 		player.DORotateQuaternion(targetQuat, 0.5f).OnComplete(()=>{
 			PlayerController.Instance.finishBackRing = true;
+			//PlayerController.Instance.isRotate = false;
 		});
 			//旋转摄像机
 		CameraRotate.Instance.xDeg = targetQuat.eulerAngles.y + 120;
        // }
+		//CheckObstacle();
 	}
 
-	//扫描环和黑洞
-//    private void OnTriggerEnter(Collider other)
-//    {
-//        if(other.tag == "RingPos"){
-//            Ring.Add(other.transform);
-//			if (other.name.EndsWith ("hole")) {
-//				Hole.Add (other.transform);
-//			}
-//        }
-//    }
+	void CheckObstacle(){
+		RaycastHit[] hit;  
+		Vector3 transPos = transform.position;
+
+		Vector3 targetPos = player.transform.position + new Vector3 (0, 1f, 0);
+		hit = Physics.RaycastAll (transPos, (targetPos - transPos), Vector3.Distance (transPos, targetPos));  
+
+		if (hit.Length > 1) {  
+			for (int i = 0; i < hit.Length; i++) {
+				print (hit [i].collider.name);
+			}
+			CameraRotate.Instance.xDeg += 120;
+		} 
+	}
 }

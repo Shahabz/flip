@@ -63,7 +63,8 @@ public class IAPManager : MonoBehaviour
 	public void OnBackBtn(){
 		gameObject.SetActive (false);
 		if (PlayerPrefs.GetInt ("NewDayTurn", 0) == 1) {	
-			Menu.Instance.turnBtn.SetActive (false);
+			if (Menu.Instance.turnBtn)
+				Menu.Instance.turnBtn.SetActive (false);
 		}
 	}
 

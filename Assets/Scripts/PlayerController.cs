@@ -86,6 +86,8 @@ public class PlayerController : MonoBehaviour {
 	[HideInInspector]
 	public bool finishBackRing = false;
 
+	public GameObject hitPs;
+
 	Radar radarScript;
 
     //分数字典
@@ -134,11 +136,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     //初始化
-    void Start () {
-
-		PlayerPrefs.SetInt ("Level1", 24);
-
-		//PlayerPrefs.DeleteAll ();
+    void Start () {		
 		if (PlayerPrefs.GetInt ("GuideScene", 0) == 0) {
 			SceneManager.LoadScene ("GuideScene");
 		}
@@ -243,9 +241,15 @@ public class PlayerController : MonoBehaviour {
 		//删除拳套
 		if (boxGloveTrans)
 			Destroy (boxGloveTrans.gameObject);
+		if (tempText) {
+			Destroy (tempText);
+		}
 	}
 
-	public void ReGameClick(){		
+	public void ReGameClick(){	
+		if (isRotate) {
+			return;
+		}	
 		//重置位置
 		transform.position = ReGamePos;
 
@@ -274,6 +278,9 @@ public class PlayerController : MonoBehaviour {
 		//删除拳套
 		if (boxGloveTrans)
 			Destroy (boxGloveTrans.gameObject);
+		if (tempText) {
+			Destroy (tempText);
+		}
 	}
 		
 	public GameObject ResetLevel;
@@ -366,7 +373,7 @@ public class PlayerController : MonoBehaviour {
 		} else {
 			int nextLevel = PlayerPrefs.GetInt ("Level" + curMapIndex + curLevel, 0);
 			if(nextLevel==0){
-				nextLevel = Random.Range (1, maxLevel + 1);
+				nextLevel = Random.Range (0, maxLevel);
 			}
 			PlayerPrefs.SetInt ("Level" + curMapIndex + curLevel, nextLevel);
 			startPos = startsPosArray [nextLevel].transform.position;
@@ -416,7 +423,7 @@ public class PlayerController : MonoBehaviour {
                
 				//开始改变角度
 				if (isRotate == false) {
-					StartCoroutine (RotateMid ());
+					StartCoroutine (RotateMid());
 				}
 
 				//松开P停止蓄力，接触角色限制，改变重力，往头朝向发射，旋转一圈，进入跳跃状态，1秒后恢复碰撞，开始跳跃动画，停止旋转，摄像机扩大视野范围，然后缩小视野范围，取消警告
@@ -493,6 +500,9 @@ public class PlayerController : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.D)) {
 			PlayerPrefs.DeleteAll ();
 		}
+		if (Input.GetKeyDown (KeyCode.R)) {
+			ReGameClick ();
+		}
     }
 
 	//累积获得的金币
@@ -508,7 +518,7 @@ public class PlayerController : MonoBehaviour {
 			if (tempText) {
 				Destroy (tempText);
 			}
-			getGold *= i + 1;
+			getGold = (int)(getGold*(i*0.2f + 1));
 			TipPop.GenerateTipStay ("$"+getGold, 0.5f, Color.white);
 			FlyGold.Instance.GenerateGoldNoColl (20, transform.position);
 			curGold = getGold;
@@ -554,6 +564,23 @@ public class PlayerController : MonoBehaviour {
 				int curMapIndex = PlayerPrefs.GetInt ("CurMap", 0);
 				PlayerPrefs.SetInt ("Level"+curMapIndex, PlayerPrefs.GetInt ("Level"+curMapIndex, 1) + 1);
 				Level.Instance.UpdateLevel ();
+
+				if(PlayerPrefs.GetInt ("Level"+curMapIndex, 1)>=10&&PlayerPrefs.GetInt ("TurnHomeFinish", 0)==0){
+					TurntableGuide.Instance.StartGuide ();
+				}
+				if(PlayerPrefs.GetInt ("Level"+curMapIndex, 1)>=40&&PlayerPrefs.GetInt ("MapHomeFinish", 0)==0){
+					MapGuide.Instance.StartGuide ();
+				}
+				if (PlayerPrefs.GetInt ("SkillFinish", 0)==0) {
+					
+					int gold = PlayerPrefs.GetInt ("Gold", 0);
+					int needGold = PlayerPrefs.GetInt ("SkillGold0", 281);
+					print (gold);
+					print (needGold);
+					if (gold >= needGold) {
+						SkillGuide.Instance.StartGuide ();
+					}
+				}
 			}
 			//生成新环
 			RadarScan();
@@ -568,7 +595,9 @@ public class PlayerController : MonoBehaviour {
 				Gold.Instance.GetGold (curGold*5);
 				MoneyManager.Instance.UpdateGold ();
 				couldShowDoubl = true;
+				TipPop.GenerateTipPerfect ("level up", 1f, Color.yellow);
 			}
+				
 		}
 
 		//如果是跳跃状态
@@ -613,6 +642,7 @@ public class PlayerController : MonoBehaviour {
 			rig.constraints = RigidbodyConstraints.None;
 			Vector3 carDirection= (transform.position-coll.transform.position).normalized;
 			rig.AddForce((carDirection + transform.up) * carForce, ForceMode.Force);
+			Instantiate (hitPs, transform.position+new Vector3(0,3,0), Quaternion.identity);
 			transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.LocalAxisAdd);
 			Invoke("ReGame",3);
 			PlayerPrefs.SetInt ("CarHit", PlayerPrefs.GetInt ("CarHit", 0) + 1);
@@ -654,6 +684,7 @@ public class PlayerController : MonoBehaviour {
 		rig.constraints = RigidbodyConstraints.None;
 		Vector3 carDirection= (transform.position-golvePos).normalized;
 		rig.AddForce((carDirection + transform.up) * carForce, ForceMode.Force);
+		Instantiate (hitPs, transform.position+new Vector3(0,3,0), Quaternion.identity);
 		//rig.AddForce(Vector3.up* carForce*1.3f, ForceMode.Force);
 		transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.WorldAxisAdd);
 		Invoke("ReGame",3);
@@ -702,6 +733,12 @@ public class PlayerController : MonoBehaviour {
 			StartCoroutine (AddForceInHole ());
 			HideGameUI (true);
 			HideMoneyUI (true);
+		}if (other.name == "point") {
+
+			other.transform.DOScale (new Vector3 (2, 2, 2), 1f);
+			other.GetComponent<SpriteRenderer> ().DOColor (Color.clear, 1f).OnComplete(()=>{
+				Destroy(other);
+			});
 		}
     }
 
@@ -954,7 +991,8 @@ public class PlayerController : MonoBehaviour {
     }
 
     //蓄力旋转
-    bool isRotate;
+	[HideInInspector]
+	public bool isRotate;
 	float MaxAngle;
 	Image power;
     IEnumerator RotateMid()

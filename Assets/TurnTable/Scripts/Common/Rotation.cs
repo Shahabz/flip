@@ -18,6 +18,15 @@ public class Rotation : MonoBehaviour {
 	}
 
 	public void RotateThis(){
+		if (PlayerPrefs.GetInt ("TurnHomeFinish", 0) == 2) {
+			PlayerPrefs.SetInt ("TurnHomeFinish", 3);
+			transform.DORotate (transform.rotation.eulerAngles + new Vector3(0,0,2000), time, RotateMode.FastBeyond360).OnComplete(()=>{
+				if (RotationFinish != null) {
+					RotationFinish ();
+				}
+			});
+			return;
+		}
 		transform.DORotate (transform.rotation.eulerAngles + rotateAngle, time, RotateMode.FastBeyond360).OnComplete(()=>{
 			if (RotationFinish != null) {
 				RotationFinish ();

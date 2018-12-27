@@ -10,6 +10,7 @@ public class OfflineReward : MonoBehaviour {
 	public GameObject offlineGO;
 	public GameObject daily;
 	public Text offlineGold;
+	public GameObject loading;
 
 	DateTime currentDate;
 	DateTime oldDate;
@@ -20,6 +21,7 @@ public class OfflineReward : MonoBehaviour {
 
 	void Start(){
 		Invoke ("NewDayTurn", 1);
+		loading.SetActive (false);
 		//AutoPopOffline ();
 	}
 
