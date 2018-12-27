@@ -57780,7 +57780,7 @@ Terrain:
     serializedVersion: 2
     rgba: 4286545791
   m_LegacyShininess: 0.078125
-  m_MaterialTemplate: {fileID: 2100000, guid: 393fbf7ac327c4c0b877d6b9c66cabec, type: 3}
+  m_MaterialTemplate: {fileID: 2100000, guid: d3d89812d35745a48be74cc74aea4ef0, type: 2}
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_ScaleInLightmap: 1

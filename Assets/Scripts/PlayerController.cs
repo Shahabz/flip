@@ -575,10 +575,12 @@ public class PlayerController : MonoBehaviour {
 					
 					int gold = PlayerPrefs.GetInt ("Gold", 0);
 					int needGold = PlayerPrefs.GetInt ("SkillGold0", 281);
-					print (gold);
-					print (needGold);
-					if (gold >= needGold) {
-						SkillGuide.Instance.StartGuide ();
+					if (needGold == 281) {
+						if (gold >= needGold) {
+							SkillGuide.Instance.StartGuide ();
+						}
+					} else {
+						PlayerPrefs.SetInt ("SkillFinish", 1);
 					}
 				}
 			}
