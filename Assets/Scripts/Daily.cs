@@ -142,10 +142,9 @@ public class Daily : MonoBehaviour {
 					Diamond.Instance.GetDiamond (i * 10);
 					PlayerPrefs.SetInt ("Mission" + i, 0);
 					int index = i-1;
-					missionGO [index].DOScale (0, 0.5f).OnComplete (() => {
-						
+					missionGO [index].DOScale (0, 0.5f).OnComplete (() => {						
 						Destroy (missionGO [index].gameObject);
-
+						FlyDiamond.Instance.MissionFinish();
 					});
 
 				}
@@ -157,7 +156,7 @@ public class Daily : MonoBehaviour {
 				PlayerPrefs.SetInt ("freeMission", 2);
 
 				missionGO[3].DOScale (0, 0.5f).OnComplete(()=>{
-
+					FlyDiamond.Instance.MissionFinish();
 					Destroy(missionGO[3].gameObject);
 				});
 			

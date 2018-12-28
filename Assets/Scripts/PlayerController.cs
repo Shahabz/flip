@@ -591,7 +591,7 @@ public class PlayerController : MonoBehaviour {
 			HideMoneyUI (false);
 
 			if (tempText) {
-				TipPop.GenerateTip ("X5", 0.5f,Color.white);
+				TipPop.GenerateTip ("X5", 0.7f,Color.yellow);
 				Destroy (tempText,0.5f);
 				PlayerPrefs.SetInt ("LevelPassGold", curGold*5);
 				Gold.Instance.GetGold (curGold*5);
@@ -612,14 +612,14 @@ public class PlayerController : MonoBehaviour {
 				//if((eulurX%360)>=295&&(eulurX%360)<=360){
 				//if ((playerEulerX > 325 && playerEulerX < 360) || (playerEulerX > 0 && playerEulerX < 50)) {
 					//获得当前碰撞的点
-					currentColl = coll.contacts [0].point;
+				currentColl = coll.contacts [0].point;
 					//检查射线下是否有环
-					CheckRingByRay();
+				CheckRingByRay();
 					//等待一段时间根据环生成分数，生成新的环
-					Invoke("ScoreGenerate", 0.05f);
-					Invoke("GenerateNewRing", 0.1f);
+				Invoke("ScoreGenerate", 0.05f);
+				Invoke ("GenerateNewRing", 0.1f);
 					//一段时间后锁定主角
-					rig.constraints = RigidbodyConstraints.FreezeAll;
+				rig.constraints = RigidbodyConstraints.FreezeAll;
 
 				//} else {
 				//	GameOverByBoxglove (currentColl);
@@ -688,7 +688,8 @@ public class PlayerController : MonoBehaviour {
 		rig.AddForce((carDirection + transform.up) * carForce, ForceMode.Force);
 		Instantiate (hitPs, transform.position+new Vector3(0,3,0), Quaternion.identity);
 		//rig.AddForce(Vector3.up* carForce*1.3f, ForceMode.Force);
-		transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 1.5f, RotateMode.WorldAxisAdd);
+		//transform.DOLocalRotate(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)), 0.2f, RotateMode.WorldAxisAdd);
+		rig.AddTorque(new Vector3(Random.Range(0,360), Random.Range(0,360), Random.Range(0,360)),ForceMode.Force);
 		Invoke("ReGame",3);
 		//在主角位置生成拳套，面向主角出拳
 		boxGloveTrans = Instantiate (boxGlove, transform.position, Quaternion.identity).transform;
@@ -943,6 +944,7 @@ public class PlayerController : MonoBehaviour {
 					MultiHaptic.HapticMedium ();
 				//TipPop.GenerateTip ("MISS", 0.5f);
 				GameOverByBoxglove (currentColl);
+
 				FlyGold.Instance.GenerateGoldNoColl (30, transform.position+Vector3.up*2);
 				//TipPop.GenerateTip ("-$"+curGold, 0.5f,Color.yellow);
 				//}
@@ -963,7 +965,7 @@ public class PlayerController : MonoBehaviour {
 				if (PlayerPrefs.GetInt ("vibration", 1) == 1)
 					MultiHaptic.HapticMedium ();
 				if (tempText) {
-					TipPop.GenerateTip ("X"+scoreDic [ringname], 0.5f,Color.white);
+					TipPop.GenerateTip ("X"+scoreDic [ringname], 0.5f,Color.yellow);
 					Destroy (tempText,0.5f);
 					//int coinLevel = PlayerPrefs.GetInt ("coinLevel", 1);	
 					Gold.Instance.GetGold ((int)(curGold*scoreDic [ringname]));

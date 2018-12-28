@@ -26,7 +26,7 @@ public class MapGuide : MonoBehaviour {
 			PlayerPrefs.SetInt ("MapHomeFinish", 2);
 			bg.gameObject.SetActive (true);
 			point [1].SetActive (true);
-			GameObject moveGO = Instantiate (menuMove, bg);
+			GameObject moveGO = Instantiate (menuMove,menuMove.transform.position,menuMove.transform.rotation, bg);
 			moveGO.GetComponent<Button> ().onClick.AddListener (() => {
 				Destroy (moveGO);
 				point [1].SetActive (false);

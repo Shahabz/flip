@@ -30,7 +30,7 @@ public class FlyGold : MonoBehaviour {
 	}
 
 	void DestroyGold(GameObject go){
-		Destroy (go, Random.Range(3f,5f));
+		Destroy (go, Random.Range (3f, 5f));
 	}
 
 	public void GenerateGoldGuide(int number,Vector3 goldPos){

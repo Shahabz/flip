@@ -21,8 +21,11 @@ public class OfflineReward : MonoBehaviour {
 
 	void Start(){
 		Invoke ("NewDayTurn", 1);
+		Invoke ("HideLoading", 0.1f);
+	}
+
+	void HideLoading(){
 		loading.SetActive (false);
-		//AutoPopOffline ();
 	}
 
 	//退出游戏获得存储离线时间

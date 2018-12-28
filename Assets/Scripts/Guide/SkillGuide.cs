@@ -23,6 +23,7 @@ public class SkillGuide : MonoBehaviour {
 	void ShowLevelup(){
 		GameObject levelupGo = Instantiate(levelup,levelup.transform.position,levelup.transform.rotation,bg);
 		point [1].SetActive (true);
+		levelupGo.transform.Find ("Upgrade").GetComponent<Button> ().interactable = true;
 		levelupGo.transform.Find("Upgrade").GetComponent<Button> ().onClick.AddListener (() => {
 			Destroy (levelupGo);
 			point [1].SetActive (false);
