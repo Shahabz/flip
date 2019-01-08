@@ -568,7 +568,7 @@ public class PlayerController : MonoBehaviour {
 				if(PlayerPrefs.GetInt ("Level"+curMapIndex, 1)>=10&&PlayerPrefs.GetInt ("TurnHomeFinish", 0)==0){
 					TurntableGuide.Instance.StartGuide ();
 				}
-				if(PlayerPrefs.GetInt ("Level"+curMapIndex, 1)>=40&&PlayerPrefs.GetInt ("MapHomeFinish", 0)==0){
+				if(PlayerPrefs.GetInt ("Level"+curMapIndex, 1)>=20&&PlayerPrefs.GetInt ("MapHomeFinish", 0)==0){
 					MapGuide.Instance.StartGuide ();
 				}
 				if (PlayerPrefs.GetInt ("SkillFinish", 0)==0) {
