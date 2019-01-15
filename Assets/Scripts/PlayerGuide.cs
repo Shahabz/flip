@@ -263,7 +263,7 @@ public class PlayerGuide : MonoBehaviour {
 
 	public void GoHome(){
 		PlayerPrefs.SetInt ("GuideScene", 1);
-		SceneManager.LoadScene ("SampleScene");
+		SceneManager.LoadScene ("Loading");
 	}
 
 

@@ -17,6 +17,7 @@ public class Menu : MonoBehaviour {
 	[SerializeField]
 	GameObject mission;
 	public GameObject turnBtn;
+	public GameObject moveAnima;
 	bool moveFinish = true;
 
 	static Menu instance;
@@ -40,8 +41,10 @@ public class Menu : MonoBehaviour {
 				transform.DOMoveX (transform.position.x + Screen.width*0.07f, 0.5f, false).OnComplete (() => {
 					moveBtn.eulerAngles = new Vector3 (0, 0, 180);
 					moveFinish = true;
+					moveAnima.SetActive (true);
 				});
-			} else if (moveBtn.eulerAngles.z == 180) {
+			} else if (moveBtn.eulerAngles.z == 180) {		
+				moveAnima.SetActive (false);
 				transform.DOMoveX (transform.position.x - Screen.width*0.07f, 0.5f, false).OnComplete (() => {
 					moveBtn.eulerAngles = new Vector3 (0, 0, 0);
 					moveFinish = true;
